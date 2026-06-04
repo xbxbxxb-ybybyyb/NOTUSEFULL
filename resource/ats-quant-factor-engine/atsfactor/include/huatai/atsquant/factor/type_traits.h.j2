@@ -1,0 +1,23 @@
+#pragma once
+
+#include <type_traits>
+#include <string>
+
+namespace huatai::atsquant::factor {
+{% for item in factors %}class {{ item.type }};
+{% endfor %}
+inline bool is_nonfactor_runtime(const std::string &type) {
+{% for nonfactor in nonfactors %}  if (type == "{{ nonfactor }}") {
+    return true;
+  }
+{% endfor %}
+  return false;
+}
+
+template <typename T> struct is_nonfactor : public std::false_type {};
+template <typename T> inline constexpr bool is_nonfactor_v = is_nonfactor<T>::value;
+{% for nonfactor in nonfactors %}template <> struct is_nonfactor<{{ nonfactor }}> : public std::true_type {
+  static constexpr const char* type = "{{ nonfactor }}";
+};
+{% endfor %}
+} // namespace huatai::atsquant::factor

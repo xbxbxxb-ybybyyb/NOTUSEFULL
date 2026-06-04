@@ -1,0 +1,1 @@
+/opt/rh/devtoolset-11/root/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/main.dir/main.cpp.o -o main   -L/data/group/800002/c++framework/arrow/9.0.0/lib64  -Wl,-rpath,/data/group/800002/c++framework/arrow/9.0.0/lib64 xdb/libxdb.a -lzstd 

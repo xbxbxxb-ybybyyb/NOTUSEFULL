@@ -1,0 +1,15 @@
+#pragma once
+
+#include "huatai/atsquant/factor/factor_manager.h"
+{% for item in factors %}#include "{{ item.path }}"
+{% endfor %}
+
+namespace huatai::atsquant::factor {
+
+inline Status register_all_types() {  
+{% for item in factors %}  ARROW_RETURN_NOT_OK(FactorManager::RegisterFactor<{{ item.type }}>());
+{% endfor %}
+  return Status::OK();
+}
+
+} // namespace huatai::atsquant::factor

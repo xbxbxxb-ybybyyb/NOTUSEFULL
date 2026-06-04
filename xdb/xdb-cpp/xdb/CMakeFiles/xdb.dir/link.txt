@@ -1,0 +1,2 @@
+/opt/rh/devtoolset-11/root/usr/bin/ar qc libxdb.a CMakeFiles/xdb.dir/src/xdb.cpp.o
+/opt/rh/devtoolset-11/root/usr/bin/ranlib libxdb.a

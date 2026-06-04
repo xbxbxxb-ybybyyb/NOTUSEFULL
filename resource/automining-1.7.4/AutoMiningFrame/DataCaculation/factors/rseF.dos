@@ -1,0 +1,13 @@
+module  Factors::rseF
+
+@state
+
+def rseF(M_SellPrice, avg_tag=20, test=60){
+
+    temp = mstd(M_SellPrice[0], avg_tag, 2)\mstd(M_SellPrice[0], test, 2)
+
+    rseF = iif(temp.isNull(), 0.0, temp)
+
+    return rseF
+
+}

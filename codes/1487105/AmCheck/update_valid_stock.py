@@ -1,0 +1,140 @@
+import config_path
+import numpy as np
+import pandas as pd
+from xquant.factordata import FactorData
+import datetime
+import os
+import pickle
+from xquant.xqutils.helper import link
+lm = link.LinkMessage()
+
+
+def update_valid_stock(today,time,invalid_stk=None,pool_stock_path='',label_test=False,limit = 0.098):
+   s = FactorData()
+   result1 = s.tradingday(today,-2)
+   last_date = result1[-2]
+   today_date = result1[-1]
+   print('#setting#:',last_date,today_date,time)
+   # quant_pool
+   files = os.listdir(pool_stock_path)
+   files.sort()
+   pool_file = files[-1]
+   print('pool_file:',pool_file)
+   q_pool = pd.read_excel(pool_stock_path+pool_file, sheet_name=0, header=0, squeeze=False, converters={'证券代码':str})
+   q_pool_stk = (q_pool['证券代码'][q_pool['市场名称']==2] + '.SZ').values.tolist() + (q_pool['证券代码'][q_pool['市场名称']==1] + '.SH').values.tolist()
+   invalid_stk_list = ['600291.SH']
+   print('invalid_stk_list:',invalid_stk_list)
+   assert  len(set(q_pool_stk) & set(invalid_stk_list))==0
+
+   with open(config_path.data_root_path+'/AlphaDataCenter/DailyWeight/pool_stock.pkl','wb') as f1:
+       pickle.dump(q_pool_stk,f1)
+   q_pool = pd.DataFrame(index=q_pool['证券代码'], columns=['证券名称', '市场名称'], data=q_pool[['证券名称', '市场名称']].values)
+   q_pool.index.name = None
+   # black list
+   # black = pd.read_excel(pool_stock_path+'black_list_20190905.xls', converters={'证券代码':str})
+   # black_stk = (black['证券代码'][black['市场名称']=='2'] + '.SZ').values.tolist() + (black['证券代码'][black['市场名称']=='1'] + '.SH').values.tolist()
+   # black.index = black['证券代码']
+   # black.index.name = None
+   # # restrict list
+   # restrict = pd.read_excel(pool_stock_path+'restrict_list_20190905.xls', converters={'证券代码':str})
+   # restrict_stk = [stk + '.SH' if stk[0]=='6' else stk + '.SZ' for stk in restrict['证券代码'].values]
+   # restrict.index = restrict['证券代码']
+   # restrict.index.name = None
+   # # invalid
+   # if invalid_stk is None:
+       # invalid_stk = invalid_stk_list
+   # all stock
+   stk_list = s.hset('MARKET', last_date, 'ALLA')
+   stk_list = stk_list['stock'].values.tolist()
+   stk_cyb = [i for i in stk_list if i[0]=='3']
+   # trade stock
+   # df = s.get_factor_value('Wind_vip',stk_list,[last_date],['trade_status'])
+   # trade_stk = [i[1] for i in df[df['trade_status']=='交易'].index.tolist()]
+   df = pd.read_pickle(config_path.basic_data_path+'/daily/trade_status.pkl').loc[last_date]
+   df.dropna(inplace=True)
+   trade_stk = df[(df!='停牌') & (df!='待核查')].index.tolist()
+    
+   # valid stock
+   # valid_stk = list((set(q_pool_stk).intersection(trade_stk) - set(black_stk)) - set(monitor_stk))
+   valid_stk = sorted((set(q_pool_stk) & set(trade_stk)))
+   # valid_stk = sorted((set(q_pool_stk) & set(trade_stk)) - set(black_stk) - set(restrict_stk) - set(invalid_stk))
+   # valid_stk_str = ''
+   # for i in valid_stk:
+   #     valid_stk_str += i + ','
+   # valid_stk_str = valid_stk_str[:-1]
+    
+   # preclose of valid stock
+   valid_pre_close = []
+#    valid_pre_close = s.get_factor_value('Wind_vip',valid_stk,[today_date],['pre_close'])
+#    tmp = valid_pre_close.loc[today_date,:]['pre_close']
+#    # valid_pre_close = w.wss(valid_stk_str, 'pre_close', 'tradeDate=' + today_date + ';priceAdj=U;cycle=D')
+#    valid_pre_close = pd.Series(index=list(tmp.index), data=tmp.values)
+#    valid_pre_close.sort_index(inplace=True)
+    
+   # max up or down stock
+   if time in ['0930','1500']:
+       close = s.get_factor_value('Basic_factor',stk_list,[last_date],['close'])
+       pre_close = s.get_factor_value('Basic_factor',stk_list,[last_date],['pre_close'])
+       close = pd.DataFrame(close['close'].values,index=list(close.loc[last_date,:].index))
+       pre_close = pd.DataFrame(pre_close['pre_close'].values,index=list(pre_close.loc[last_date,:].index))
+       ret = (close-pre_close)/pre_close
+       ret = ret[0]
+       maxup_stk = list(ret[ret>=limit].index)
+       maxdown_stk = list(ret[ret<=-limit].index)        
+       # maxupordown = s.get_factor_value('Basic_factor',stk_list,[last_date],['maxupordown'])
+       # maxup_stk = [i[1] for i in maxupordown['maxupordown'][maxupordown['maxupordown']==1].index]
+       # maxdown_stk = [i[1] for i in maxupordown['maxupordown'][maxupordown['maxupordown']==-1].index]
+   elif time == '1300':
+       close = pd.read_pickle(config_path.data_root_path+'/AlphaDataCenter/Basic/minute/Close/%s.pkl' % today_date)
+       stocks_use = list(close.columns)
+       pre_close = s.get_factor_value('Wind_vip',stocks_use,[today_date],['pre_close'])
+       pre_close = pd.DataFrame(pre_close['pre_close'].values,index=list(pre_close.loc[today_date,:].index))
+
+       ret = close.iloc[119]/pre_close[0]-1
+       maxup_stk = list(ret[ret>=limit].index)
+       maxdown_stk = list(ret[ret<=-limit].index)
+    
+   if today > '20200824' or (today == '20200824' and time not in ['0930']):  
+       print('CYB Start')                      
+       stk_cyb_max = list(set(stk_cyb) & set(maxup_stk +maxdown_stk))
+
+       if len(stk_cyb_max) != 0:
+           maxup_stk = list(set(maxup_stk) - set(stk_cyb_max))
+           maxdown_stk = list(set(maxdown_stk) - set(stk_cyb_max))               
+           stk_cyb_maxup = list(ret.loc[stk_cyb_max][ret.loc[stk_cyb_max]>=limit+0.1].index)            
+           maxup_stk.extend(stk_cyb_maxup)
+
+           stk_cyb_maxdown = list(ret.loc[stk_cyb_max][ret.loc[stk_cyb_max]<=-limit-0.1].index)
+           maxdown_stk.extend(stk_cyb_maxdown)     
+            
+                      
+   amt = pd.read_pickle(config_path.data_root_path+'/AlphaDataCenter/Basic/daily/amt_by_yuan.pkl')
+
+   amt_ = (amt.loc[:last_date].iloc[-5:]).mean(axis=0)
+   stocksAmtLowerThan5QianWan = amt_[amt_<=5e7].index.tolist()
+   stocksAmtLowerThan3QianWan = amt_[amt_<=3e7].index.tolist()
+        
+        
+   print('number of allll stock :', len(stk_list))
+   print('number of trade stock :', len(trade_stk))
+   print('number of quant stock :', len(q_pool_stk))
+   print('number of valid stock :', len(valid_stk))
+   print('number of maxup stock :', len(maxup_stk))
+   print('number of maxdn stock :', len(maxdown_stk))
+   print('number of Amt<5e7 stock :', len(stocksAmtLowerThan5QianWan))
+   str_send = \
+   'number of allll stock :' + str(len(stk_list)) + '\n'+ \
+   'number of trade stock :' + str(len(trade_stk)) + '\n'+ \
+   'number of valid stock :' + str(len(valid_stk)) + '\n'+ \
+   'number of maxup stock :' + str(len(maxup_stk)) + '\n'+ \
+   'number of maxdn stock :' + str(len(maxdown_stk)) + '\n'+ \
+   'number of Amt<5e7 stock :' + str(len(stocksAmtLowerThan5QianWan))
+    
+   valid_stk = {'trade_stk':valid_stk, 'maxup_stk':maxup_stk, 'maxdown_stk':maxdown_stk, \
+   'valid_pre_close':valid_pre_close,'stocksAmtLowerThan5QianWan':stocksAmtLowerThan5QianWan,\
+   'stocksAmtLowerThan3QianWan':stocksAmtLowerThan3QianWan}
+
+    
+   if not label_test:
+       np.save(config_path.valid_stock_path+'/valid_stock_' + today_date + '_' + time + '.npy', valid_stk)
+   lm.sendMessage(str_send)

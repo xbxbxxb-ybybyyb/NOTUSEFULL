@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="XdbFramework"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\xdb\;CMake Files\xdb\thirdparty\;CMake Files\xdb\thirdparty\zstd\;CMake Files\xdb\thirdparty\zstd\build\;CMake Files\xdb\thirdparty\zstd\build\cmake\;CMake Files\xdb\thirdparty\zstd\build\cmake\CMakeModules\;CMake Files\xdb\thirdparty\zstd\build\cmake\lib\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="xdb">
+				<Option output="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/libxdb.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/local/lib/boost/include"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/include"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty"/>
+					<Add directory="."/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/../../../../include/c++/11"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/../../../../include/c++/11/x86_64-redhat-linux"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/../../../../include/c++/11/backward"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/opt/anaconda3/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/Makefile&quot;  VERBOSE=1 xdb"/>
+					<CompileFile command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="xdb/fast">
+				<Option output="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/libxdb.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/local/lib/boost/include"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/include"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty"/>
+					<Add directory="."/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/../../../../include/c++/11"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/../../../../include/c++/11/x86_64-redhat-linux"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/../../../../include/c++/11/backward"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/opt/anaconda3/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/Makefile&quot;  VERBOSE=1 xdb/fast"/>
+					<CompileFile command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="clean-all">
+				<Option working_dir="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/Makefile&quot;  VERBOSE=1 clean-all"/>
+					<CompileFile command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="libzstd_shared">
+				<Option output="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/libzstd.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DZSTD_MULTITHREAD"/>
+					<Add option="-DXXH_NAMESPACE=ZSTD_"/>
+					<Add option="-DZSTD_LEGACY_SUPPORT=0"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/build/cmake/lib"/>
+					<Add directory="/usr/local/lib/boost/include"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/include"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/build/cmake/../../lib"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/build/cmake/../../lib/common"/>
+					<Add directory="."/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/../../../../include/c++/11"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/../../../../include/c++/11/x86_64-redhat-linux"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/../../../../include/c++/11/backward"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/opt/anaconda3/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 libzstd_shared"/>
+					<CompileFile command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="libzstd_shared/fast">
+				<Option output="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/libzstd.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DZSTD_MULTITHREAD"/>
+					<Add option="-DXXH_NAMESPACE=ZSTD_"/>
+					<Add option="-DZSTD_LEGACY_SUPPORT=0"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/build/cmake/lib"/>
+					<Add directory="/usr/local/lib/boost/include"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/include"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/build/cmake/../../lib"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/build/cmake/../../lib/common"/>
+					<Add directory="."/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/../../../../include/c++/11"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/../../../../include/c++/11/x86_64-redhat-linux"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/../../../../include/c++/11/backward"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/opt/anaconda3/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 libzstd_shared/fast"/>
+					<CompileFile command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="libzstd_static">
+				<Option output="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/libzstd.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DZSTD_MULTITHREAD"/>
+					<Add option="-DXXH_NAMESPACE=ZSTD_"/>
+					<Add option="-DZSTD_LEGACY_SUPPORT=0"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/build/cmake/lib"/>
+					<Add directory="/usr/local/lib/boost/include"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/include"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/build/cmake/../../lib"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/build/cmake/../../lib/common"/>
+					<Add directory="."/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/../../../../include/c++/11"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/../../../../include/c++/11/x86_64-redhat-linux"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/../../../../include/c++/11/backward"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/opt/anaconda3/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 libzstd_static"/>
+					<CompileFile command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="libzstd_static/fast">
+				<Option output="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/libzstd.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DZSTD_MULTITHREAD"/>
+					<Add option="-DXXH_NAMESPACE=ZSTD_"/>
+					<Add option="-DZSTD_LEGACY_SUPPORT=0"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/build/cmake/lib"/>
+					<Add directory="/usr/local/lib/boost/include"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/include"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/build/cmake/../../lib"/>
+					<Add directory="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/build/cmake/../../lib/common"/>
+					<Add directory="."/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/../../../../include/c++/11"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/../../../../include/c++/11/x86_64-redhat-linux"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/../../../../include/c++/11/backward"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/lib/gcc/x86_64-redhat-linux/11/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/opt/rh/devtoolset-11/root/usr/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/opt/anaconda3/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 libzstd_static/fast"/>
+					<CompileFile command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="libzstd.pc">
+				<Option working_dir="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 libzstd.pc"/>
+					<CompileFile command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="uninstall">
+				<Option working_dir="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 uninstall"/>
+					<CompileFile command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/opt/rh/devtoolset-11/root/usr/bin/gmake -f &quot;/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/xdb/zstd/lib/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/src/xdb_reader.cpp">
+			<Option target="xdb"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/src/xdb_writer.cpp">
+			<Option target="xdb"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/bitstream.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/compiler.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/cpu.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/debug.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/debug.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/entropy_common.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/error_private.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/error_private.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/fse.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/fse_decompress.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/huf.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/mem.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/pool.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/pool.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/threading.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/threading.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/xxhash.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/xxhash.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/zstd_common.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/zstd_errors.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/common/zstd_internal.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/fse_compress.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/hist.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/hist.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/huf_compress.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/zstd_compress.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/zstd_compress_internal.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/zstd_compress_literals.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/zstd_compress_literals.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/zstd_compress_sequences.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/zstd_compress_sequences.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/zstd_double_fast.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/zstd_double_fast.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/zstd_fast.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/zstd_fast.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/zstd_lazy.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/zstd_lazy.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/zstd_ldm.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/zstd_ldm.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/zstd_opt.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/zstd_opt.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/zstdmt_compress.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/compress/zstdmt_compress.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/decompress/huf_decompress.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/decompress/zstd_ddict.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/decompress/zstd_ddict.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/decompress/zstd_decompress.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/decompress/zstd_decompress_block.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/decompress/zstd_decompress_block.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/decompress/zstd_decompress_internal.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/deprecated/zbuff.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/deprecated/zbuff_common.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/deprecated/zbuff_compress.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/deprecated/zbuff_decompress.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/dictBuilder/cover.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/dictBuilder/cover.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/dictBuilder/divsufsort.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/dictBuilder/divsufsort.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/dictBuilder/fastcover.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/dictBuilder/zdict.c">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/dictBuilder/zdict.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/lib/zstd.h">
+			<Option target="libzstd_shared"/>
+			<Option target="libzstd_static"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\xdb\"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/build/cmake/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\xdb\thirdparty\zstd\build\cmake\"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/build/cmake/CMakeModules/AddZstdCompilationFlags.cmake">
+			<Option virtualFolder="CMake Files\xdb\thirdparty\zstd\build\cmake\CMakeModules\"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/build/cmake/CMakeModules/GetZstdLibraryVersion.cmake">
+			<Option virtualFolder="CMake Files\xdb\thirdparty\zstd\build\cmake\CMakeModules\"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/build/cmake/lib/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\xdb\thirdparty\zstd\build\cmake\lib\"/>
+		</Unit>
+		<Unit filename="/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/xdb/thirdparty/zstd/build/cmake/lib/cmake_uninstall.cmake.in">
+			<Option virtualFolder="CMake Files\xdb\thirdparty\zstd\build\cmake\lib\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

@@ -1,0 +1,36 @@
+from System.Factor import Factor
+import numpy as np
+
+
+class FactorBidDistanceMulRet(Factor):
+    def __init__(self, config, factorManager):
+        super().__init__(config, factorManager)
+        self.__lag = self._getParameter("Lag")
+
+        self.__bid_vwap = self._getFactor(
+            {
+                "ClassName": "BidVwap"
+            }
+        )
+        self._addIntermediate("bid_distance", [])
+
+    def calculate(self):
+        bid_price = self._getLastTickData("BidPrice")
+        bid_price_adjust = self.__bid_vwap.getFactorValueList()[-self.__lag:]
+        bid_distance = self.getIntermediate("bid_distance")
+        bidd = bid_price_adjust[-1] / bid_price[0] - 1 if bid_price[0] != 0 else np.nan
+        bid_distance.append(bidd)
+        bid_distance_sub = bid_distance[-self.__lag:]
+        if bid_price_adjust[0] != 0:
+            factor_value = np.nanmean(bid_distance_sub) * (bid_price[0] / bid_price_adjust[0] - 1) * 1000000
+        else:
+            lastv = self.getLastFactorValue()
+            if lastv is not None:
+                factor_value = lastv
+            else:
+                factor_value = 0
+
+        if np.isnan(factor_value):
+            factor_value = 0
+
+        self._addFactorValue(factor_value)

@@ -1,0 +1,1 @@
+__xquant_config_json={"userAccount":"013150","shareDirList":[{"orgId":1,"parentId":0,"orgName":"华泰证券","orgType":"company"},{"orgId":2,"parentId":1,"orgName":"证券投资部","orgType":"department","isAdmin":"True"},{"orgId":120,"parentId":2,"orgName":"系统团队","orgType":"team"}]}

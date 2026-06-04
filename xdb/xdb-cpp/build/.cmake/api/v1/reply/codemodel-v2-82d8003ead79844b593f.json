@@ -1,0 +1,217 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-RelWithDebInfo-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"build" : "xdb",
+					"childIndexes" : 
+					[
+						2
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-xdb-RelWithDebInfo-9577f526506f922c8691.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "xdb",
+					"targetIndexes" : 
+					[
+						6
+					]
+				},
+				{
+					"build" : "xdb/zstd",
+					"childIndexes" : 
+					[
+						3
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-xdb.zstd-RelWithDebInfo-4870305539060df720f2.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.9"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 2,
+					"source" : "xdb/thirdparty/zstd/build/cmake",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "xdb/zstd/lib",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-xdb.zstd.lib-RelWithDebInfo-56bd57277437c55fbeda.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.9"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 3,
+					"source" : "xdb/thirdparty/zstd/build/cmake/lib",
+					"targetIndexes" : 
+					[
+						1,
+						2,
+						3,
+						5
+					]
+				}
+			],
+			"name" : "RelWithDebInfo",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "test",
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						2
+					],
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "XdbFramework",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						6
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						3
+					],
+					"directoryIndexes" : 
+					[
+						2
+					],
+					"name" : "zstd",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						3
+					],
+					"name" : "libzstd",
+					"parentIndex" : 2,
+					"targetIndexes" : 
+					[
+						1,
+						2,
+						3,
+						5
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 2,
+					"id" : "clean-all::@97468cbd0c1a776cecd9",
+					"jsonFile" : "target-clean-all-RelWithDebInfo-fee6e7e134ef14197a75.json",
+					"name" : "clean-all",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "libzstd.pc::@a7ebc07dc0ccd125fe96",
+					"jsonFile" : "target-libzstd.pc-RelWithDebInfo-3594c0be2c1999b5755e.json",
+					"name" : "libzstd.pc",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "libzstd_shared::@a7ebc07dc0ccd125fe96",
+					"jsonFile" : "target-libzstd_shared-RelWithDebInfo-9a324aaf0bdde9845066.json",
+					"name" : "libzstd_shared",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "libzstd_static::@a7ebc07dc0ccd125fe96",
+					"jsonFile" : "target-libzstd_static-RelWithDebInfo-1de27cc5b102f29277bb.json",
+					"name" : "libzstd_static",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "main::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-main-RelWithDebInfo-6594f90bb8ed1b29424c.json",
+					"name" : "main",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "uninstall::@a7ebc07dc0ccd125fe96",
+					"jsonFile" : "target-uninstall-RelWithDebInfo-8576b44cd5cf37f6c4f1.json",
+					"name" : "uninstall",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "xdb::@a0e1c5f183291fbaca7c",
+					"jsonFile" : "target-xdb-RelWithDebInfo-61bd267e2f23c4adcedd.json",
+					"name" : "xdb",
+					"projectIndex" : 1
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/data/user/012129/cpp/xdb-cpp/build",
+		"source" : "/data/user/012129/cpp/xdb-cpp"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}

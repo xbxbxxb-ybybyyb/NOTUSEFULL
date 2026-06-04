@@ -1,0 +1,22 @@
+# _*_ coding:utf-8 _*_
+try:
+    import ray
+    from .basic_data import *
+    from .stock_data import *
+    from .index_data import *
+    from .fund_data import *
+    from .psfactor import *
+except:
+    pass
+
+
+import sys
+import logging
+
+try:
+    from .logger import setup_logging
+    tq_logger = setup_logging("quant_info")
+except:
+    #unkown error fund
+    tq_logger = logging.getLogger('mylogger')
+    tq_logger.setLevel(logging.WARNING)

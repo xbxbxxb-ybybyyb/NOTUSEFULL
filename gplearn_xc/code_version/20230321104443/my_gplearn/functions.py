@@ -1,0 +1,547 @@
+"""The functions used to create programs.
+
+The :mod:`gplearn.functions` module contains all of the functions used by
+gplearn programs. It also contains helper methods for a user to define their
+own custom functions.
+"""
+
+# Author: Trevor Stephens <trevorstephens.com>
+#
+# License: BSD 3 clause
+
+import numpy as np
+from joblib import wrap_non_picklable_objects
+
+import talib as ta
+import pandas as pd
+# from scipy import stats
+
+
+# import pickle
+
+__all__ = ['make_function']
+
+
+class MetaFun(type):
+    def __instancecheck__(cls,instance):        
+        # print(123456)
+        # return hasattr(instance,'__xc_instance_tag_gpfun__')
+        return hasattr(instance,'function') and hasattr(instance,'params_need')
+
+
+# class _Function(object):
+class _Function(metaclass = MetaFun):
+    """A representation of a mathematical relationship, a node in a program.
+
+    This object is able to be called with NumPy vectorized arguments and return
+    a resulting vector based on a mathematical relationship.
+
+    Parameters
+    ----------
+    function : callable
+        A function with signature function(x1, *args) that returns a Numpy
+        array of the same shape as its arguments.
+
+    name : str
+        The name for the function as it should be represented in the program
+        and its visualizations.
+
+    arity : int
+        The number of arguments that the ``function`` takes.
+
+    """
+
+    # def __init__(self, function, name, arity):
+    def __init__(self, function, name, arity, is_ts=False, params_need=None):
+        self.function = function
+        self.name = name
+        self.arity = arity
+        
+        # 新增参数
+        self.is_ts = is_ts  # bool, 代表此函数是否为时间序列函数，默认为False
+        self.d = 0  # int, 时间序列回滚周期，若为时间序列函数则需要重设此参数
+        self.params_need = params_need  # list, 部分TA-Lib的方法需要的固定参数及顺序
+        
+        self.__xc_instance_tag_gpfun__ = None
+        
+        
+        
+        
+
+    def __call__(self, *args):
+        # return self.function(*args)
+        if not self.is_ts:
+            return self.function(*args)
+        else:
+            if self.d == 0:
+                raise AttributeError("Please reset attribute 'd'")
+            else:
+                return self.function(*args, self.d)
+            
+    def set_d(self, d):
+         self.d = d
+         self.name += '_%d' % self.d
+
+
+
+def make_function(*, function, name, arity, wrap=True):
+    """Make a function node, a representation of a mathematical relationship.
+
+    This factory function creates a function node, one of the core nodes in any
+    program. The resulting object is able to be called with NumPy vectorized
+    arguments and return a resulting vector based on a mathematical
+    relationship.
+
+    Parameters
+    ----------
+    function : callable
+        A function with signature `function(x1, *args)` that returns a Numpy
+        array of the same shape as its arguments.
+
+    name : str
+        The name for the function as it should be represented in the program
+        and its visualizations.
+
+    arity : int
+        The number of arguments that the `function` takes.
+
+    wrap : bool, optional (default=True)
+        When running in parallel, pickling of custom functions is not supported
+        by Python's default pickler. This option will wrap the function using
+        cloudpickle allowing you to pickle your solution, but the evolution may
+        run slightly more slowly. If you are running single-threaded in an
+        interactive Python session or have no need to save the model, set to
+        `False` for faster runs.
+
+    """
+    if not isinstance(arity, int):
+        raise ValueError('arity must be an int, got %s' % type(arity))
+    if not isinstance(function, np.ufunc):
+        if function.__code__.co_argcount != arity:
+            raise ValueError('arity %d does not match required number of '
+                             'function arguments of %d.'
+                             % (arity, function.__code__.co_argcount))
+    if not isinstance(name, str):
+        raise ValueError('name must be a string, got %s' % type(name))
+    if not isinstance(wrap, bool):
+        raise ValueError('wrap must be an bool, got %s' % type(wrap))
+
+    # Check output shape
+    args = [np.ones(10) for _ in range(arity)]
+    try:
+        function(*args)
+    except (ValueError, TypeError):
+        raise ValueError('supplied function %s does not support arity of %d.'
+                         % (name, arity))
+    if not hasattr(function(*args), 'shape'):
+        raise ValueError('supplied function %s does not return a numpy array.'
+                         % name)
+    if function(*args).shape != (10,):
+        raise ValueError('supplied function %s does not return same shape as '
+                         'input vectors.' % name)
+
+    # Check closure for zero & negative input arguments
+    args = [np.zeros(10) for _ in range(arity)]
+    if not np.all(np.isfinite(function(*args))):
+        raise ValueError('supplied function %s does not have closure against '
+                         'zeros in argument vectors.' % name)
+    args = [-1 * np.ones(10) for _ in range(arity)]
+    if not np.all(np.isfinite(function(*args))):
+        raise ValueError('supplied function %s does not have closure against '
+                         'negatives in argument vectors.' % name)
+
+    if wrap:
+        return _Function(function=wrap_non_picklable_objects(function),
+                         name=name,
+                         arity=arity)
+    return _Function(function=function,
+                     name=name,
+                     arity=arity)
+
+
+# def _protected_division(x1, x2):
+#     """Closure of division (x1/x2) for zero denominator."""
+#     with np.errstate(divide='ignore', invalid='ignore'):
+#         return np.where(np.abs(x2) > 0.001, np.divide(x1, x2), 1.)
+
+
+# def _protected_sqrt(x1):
+#     """Closure of square root for negative arguments."""
+#     return np.sqrt(np.abs(x1))
+
+
+# def _protected_log(x1):
+#     """Closure of log for zero and negative arguments."""
+#     with np.errstate(divide='ignore', invalid='ignore'):
+#         return np.where(np.abs(x1) > 0.001, np.log(np.abs(x1)), 0.)
+
+
+# def _protected_inverse(x1):
+#     """Closure of inverse for zero arguments."""
+#     with np.errstate(divide='ignore', invalid='ignore'):
+#         return np.where(np.abs(x1) > 0.001, 1. / x1, 0.)
+
+
+def _sigmoid(x1):
+    """Special case of logistic function to transform to probabilities."""
+    with np.errstate(over='ignore', under='ignore'):
+        return 1 / (1 + np.exp(-x1))
+
+
+
+# def _ts_delay(x1, d):
+#     return pd.Series(x1).shift(d).values
+# ts_delay1 = _Function(function=_ts_delay, name='ts_delay', arity=1, is_ts=True)
+
+# def _ts_delta(x1, d):
+#     return x1 - _ts_delay(x1, d)
+# ts_delta1 = _Function(function=_ts_delta, name='ts_delta', arity=1, is_ts=True)
+
+# def _ts_min(x1, d):
+#     return pd.Series(x1).rolling(d, min_periods=int(d / 2)).min()
+# ts_min1 = _Function(function=_ts_min, name='ts_min', arity=1, is_ts=True)
+
+# def _ts_max(x1, d):
+#     return pd.Series(x1).rolling(d, min_periods=int(d / 2)).max()
+# ts_max1 = _Function(function=_ts_max, name='ts_max', arity=1, is_ts=True)
+
+# def _ts_argmin(x1, d):
+#     return pd.Series(x1).rolling(d, min_periods=int(d / 2)).apply(lambda x: x.argmin())
+# ts_argmin1 = _Function(function=_ts_argmin, name='ts_argmin', arity=1, is_ts=True)
+
+# def _ts_argmax(x1, d):
+#     return pd.Series(x1).rolling(d, min_periods=int(d / 2)).apply(lambda x: x.argmax())
+# ts_argmax1 = _Function(function=_ts_argmax, name='ts_argmax', arity=1, is_ts=True)
+
+# def _ts_rank(x1, d):
+#     return pd.Series(x1).rolling(d, min_periods=int(d / 2)).apply(
+#         lambda x: stats.percentileofscore(x, x[-1]) / 100
+#     )
+# ts_rank1 = _Function(function=_ts_rank, name='ts_rank', arity=1, is_ts=True)
+
+# def _ts_sum(x1, d):
+#     return pd.Series(x1).rolling(d, min_periods=int(d / 2)).sum()
+# ts_sum1 = _Function(function=_ts_sum, name='ts_sum', arity=1, is_ts=True)
+
+# def _ts_stddev(x1, d):
+#     return pd.Series(x1).rolling(d, min_periods=int(d / 2)).std()
+# ts_stddev1 = _Function(function=_ts_stddev, name='ts_stddev', arity=1, is_ts=True)
+
+# def _ts_corr(x1, x2, d):
+#     return pd.Series(x1).rolling(d, min_periods=int(d / 2)).corr(pd.Series(x2))
+# ts_corr2 = _Function(function=_ts_corr, name='ts_corr', arity=2, is_ts=True)
+
+# def _ts_mean_return(x1, d):
+#     return pd.Series(x1).pct_change().rolling(d, min_periods=int(d / 2)).mean()
+# ts_mean_return1 = _Function(function=_ts_mean_return, name='ts_mean_return',
+#                             arity=1, is_ts=True)
+
+# ts_dema1 = _Function(function=ta.DEMA, name='DEMA', arity=1, is_ts=True)
+# ts_kama1 = _Function(function=ta.KAMA, name='KAMA', arity=1, is_ts=True)
+# ts_ma1 = _Function(function=ta.MA, name='MA', arity=1, is_ts=True)
+# ts_midpoint1 = _Function(function=ta.MIDPOINT, name='MIDPOINT', arity=1, is_ts=True)
+# ts_beta2 = _Function(function=ta.BETA, name='BETA', arity=2, is_ts=True)
+# ts_lr_angle1 = _Function(function=ta.LINEARREG_ANGLE, name='LR_ANGLE',
+#                          arity=1, is_ts=True)
+# ts_lr_intercept1: _Function = _Function(function=ta.LINEARREG_INTERCEPT,
+#                                         name='LR_INTERCEPT', arity=1, is_ts=True)
+# ts_lr_slope1 = _Function(function=ta.LINEARREG_SLOPE, name='LR_SLOPE',
+#                          arity=1, is_ts=True)
+# ts_ht1 = _Function(function=ta.HT_DCPHASE, name='HT', arity=1, is_ts=True)
+
+# fixed_midprice = _Function(function=ta.MIDPRICE, name='midprice', arity=0, is_ts=True,
+#                            params_need=['Ask', 'Bid'])
+
+# fixed_aroonosc = _Function(function=ta.AROONOSC, name='AROONOSC', arity=0, is_ts=True,
+#                            params_need=['Ask', 'Bid'])
+
+# fixed_willr = _Function(function=ta.WILLR, name='WILLR', arity=0, is_ts=True,
+#                         params_need=['Ask', 'Bid', 'AvgPrice'])
+
+# fixed_cci = _Function(function=ta.CCI, name='CCI', arity=0, is_ts=True,
+#                       params_need=['Ask', 'Bid', 'AvgPrice'])
+
+# fixed_adx = _Function(function=ta.ADX, name='ADX', arity=0, is_ts=True,
+#                       params_need=['Ask', 'Bid', 'AvgPrice'])
+
+# fixed_mfi = _Function(function=ta.MFI, name='MFI', arity=0, is_ts=True,
+#                       params_need=['Ask', 'Bid', 'AvgPrice', 'volume'])
+
+# fixed_natr = _Function(function=ta.NATR, name='NATR', arity=0, is_ts=True,
+#                        params_need=['Ask', 'Bid', 'AvgPrice'])
+
+
+
+
+
+# add2 = _Function(function=np.add, name='add', arity=2)
+# sub2 = _Function(function=np.subtract, name='sub', arity=2)
+# mul2 = _Function(function=np.multiply, name='mul', arity=2)
+# div2 = _Function(function=_protected_division, name='div', arity=2)
+# sqrt1 = _Function(function=_protected_sqrt, name='sqrt', arity=1)
+# log1 = _Function(function=_protected_log, name='log', arity=1)
+# neg1 = _Function(function=np.negative, name='neg', arity=1)
+# inv1 = _Function(function=_protected_inverse, name='inv', arity=1)
+# abs1 = _Function(function=np.abs, name='abs', arity=1)
+# max2 = _Function(function=np.maximum, name='max', arity=2)
+# min2 = _Function(function=np.minimum, name='min', arity=2)
+# sin1 = _Function(function=np.sin, name='sin', arity=1)
+# cos1 = _Function(function=np.cos, name='cos', arity=1)
+# tan1 = _Function(function=np.tan, name='tan', arity=1)
+sig1 = _Function(function=_sigmoid, name='sig', arity=1)
+
+# _function_map = {'add': add2,
+#                  'sub': sub2,
+#                  'mul': mul2,
+#                  'div': div2,
+#                  'sqrt': sqrt1,
+#                  'log': log1,
+#                  'abs': abs1,
+#                  'neg': neg1,
+#                  'inv': inv1,
+#                  'max': max2,
+#                  'min': min2,
+#                  'sin': sin1,
+#                  'cos': cos1,
+#                  'tan': tan1}
+
+# _ts_function_map = {
+#     'ts_delay': ts_delay1,
+#     'ts_delta': ts_delta1,
+#     'ts_min': ts_min1,
+#     'ts_max': ts_max1,
+#     'ts_argmin': ts_argmin1,
+#     'ts_argmax': ts_argmax1,
+#     'ts_rank': ts_rank1,
+#     'ts_stddev': ts_stddev1,
+#     'ts_corr': ts_corr2,
+#     'ts_mean_return': ts_mean_return1,
+
+#     'DEMA': ts_dema1,
+#     'KAMA': ts_kama1,
+#     'MA': ts_ma1,
+#     'MIDPOINT': ts_midpoint1,
+#     'BETA': ts_beta2,
+#     'LR_ANGLE': ts_lr_angle1,
+#     'LR_INTERCEPT': ts_lr_intercept1,
+#     'LR_SLOPE': ts_lr_slope1,
+#     'HT': ts_ht1
+# }
+
+# _fixed_function_map = {
+#     'MIDPRICE': fixed_midprice,
+#     'AROONOSC': fixed_aroonosc,
+#     'WILLR': fixed_willr,
+#     'CCI': fixed_cci,
+#     'ADX': fixed_adx,
+#     'MFI': fixed_mfi,
+#     'NATR': fixed_natr
+# }
+
+
+
+def _plus(a, b):
+    return np.add(a,b)
+
+def _minus(a, b):
+    return np.subtract(a,b)
+
+def _mul(a, b):
+    return np.multiply(a,b)
+
+def _p_div(a, b):
+    with np.errstate(divide='ignore', invalid='ignore'):
+        return np.where((np.abs(a) == 0) & (np.abs(b) == 0), np.nan, np.divide(a,b))
+
+def _maxi(a, b):
+    return np.maximum(a, b)
+
+def _mini(a, b):
+    return np.minimum(a, b)
+
+def _log(a):
+    with np.errstate(divide='ignore', invalid='ignore'):
+        return np.log(a)
+
+def _neg(a):
+    return -a
+
+def _Abs(a):
+    return np.abs(a)
+
+def _sign(a):
+    return np.sign(a)
+
+def _clear_by_cond(a, b, c):
+    return np.where(a < b,0,c)
+
+def _if_then_else(a, b, c, d):
+    return np.where(a < b,c,d)
+
+def _mean2(a, b):
+    return (a + b) * 0.5
+
+def _mean3(a, b, c):
+    return (a + b + c) / 3
+
+def _itself(a):
+    return a
+
+def _ta_ht_dcphase(a):
+    if np.all(np.isnan(a)):
+        return np.ones_like(a) * np.nan
+    return ta.HT_DCPHASE(a)
+
+plus1 = _Function(function=_plus, name='plus', arity=2)
+minus1 = _Function(function=_minus, name='minus', arity=2)
+mul1 = _Function(function=_mul, name='mul', arity=2)
+p_div1 = _Function(function=_p_div, name='p_div', arity=2)
+maxi1 = _Function(function=_maxi, name='maxi', arity=2)
+mini1 = _Function(function=_mini, name='mini', arity=2)
+
+log1 = _Function(function=_log, name='log', arity=1)
+neg1 = _Function(function=_neg, name='neg', arity=1)
+Abs1 = _Function(function=_Abs, name='Abs', arity=1)
+sign1 = _Function(function=_sign, name='sign', arity=1)
+
+clear_by_cond1 = _Function(function=_clear_by_cond, name='clear_by_cond', arity=3)
+if_then_else1 = _Function(function=_if_then_else, name='if_then_else', arity=4)
+mean21 = _Function(function=_mean2, name='mean2', arity=2)
+mean31 = _Function(function=_mean3, name='mean3', arity=3)
+itself1 = _Function(function=_itself, name='itself', arity=1)
+ta_ht_dcphase1 = _Function(function=_ta_ht_dcphase, name='ta_ht_dcphase', arity=1)
+
+
+_function_map = {'plus': plus1,
+                  'minus': minus1,
+                  'mul': mul1,
+                  'p_div': p_div1,
+                  'maxi': maxi1,
+                  'mini': mini1,
+                  'log': log1,
+                  'neg': neg1,
+                  'Abs': Abs1,
+                  'sign': sign1,
+                  'clear_by_cond': clear_by_cond1,
+                  'if_then_else': if_then_else1,
+                  'mean2': mean21,
+                  'mean3': mean31,
+                  'itself': itself1,
+                   'ta_ht_dcphase': ta_ht_dcphase1}
+
+
+
+def _ts_ta_beta(a,b,n):
+    # if np.all(np.isnan(a)) or np.all(np.isnan(b)):
+    if np.all(np.isnan(a+b)):
+        return np.ones_like(a) * np.nan
+    return ta.BETA(a,b,n)
+
+def _ts_ta_dema(a,n):
+    # with open(r'D:/Work/遗传算法测试/debug/test1.pkl','wb') as file:
+        # pickle.dump([a,n],file)
+    if np.all(np.isnan(a)):
+        return np.ones_like(a) * np.nan
+    return ta.DEMA(a,n)
+
+def _ts_ta_kama(a,n):
+    if np.all(np.isnan(a)):
+        return np.ones_like(a) * np.nan
+    return ta.KAMA(a,n)
+
+def _ts_delay(a, n):
+    return pd.Series(a).shift(n).values
+
+def _ts_stddev(a, n):
+    # return pd.Series(a).rolling(max(n,2),closed='right').std().values
+    return pd.Series(a).rolling(max(n,2)).std().values
+
+def _ts_delta(a, n):
+    return a - pd.Series(a).shift(n).values
+
+def _ts_corr_n(a, b, n):
+    return pd.Series(a).rolling(n).corr(pd.Series(b)).values
+
+def _ts_cov_n(a, b, n):
+    return pd.Series(a).rolling(n).cov(pd.Series(b)).values
+
+def _ts_sum(a, n):
+    return pd.Series(a).rolling(n).sum().values
+
+def _ts_mean(a, n):
+    return pd.Series(a).rolling(n).mean().values
+
+def _ts_max(a, n):
+    return pd.Series(a).rolling(n).max().values
+
+def _ts_min(a, n):
+    return pd.Series(a).rolling(n).min().values
+
+def _ts_prod(a, n):
+    return pd.Series(a).rolling(n).apply(lambda x:x.prod()).values
+
+def _ts_wma(a, n):
+    c = pd.Series(a).ewm(com=n,adjust=False).mean().values
+    return c
+
+def _ts_emals(a,b,n):    
+    # if np.all(np.isnan(a)) or np.all(np.isnan(b)):
+    if np.all(np.isnan(a+b)):
+        return np.ones_like(a) * np.nan
+    ab = a * b
+    a2 = a**2
+    if np.all(np.isnan(a)):
+        return np.ones_like(a) * np.nan
+    aw = ta.EMA(a,n)
+    if np.all(np.isnan(b)):
+        return np.ones_like(b) * np.nan
+    bw = ta.EMA(b,n)
+    if np.all(np.isnan(ab)):
+        return np.ones_like(b) * np.nan
+    abw = ta.EMA(ab,n)
+    if np.all(np.isnan(a2)):
+        return np.ones_like(b) * np.nan
+    a2w = ta.EMA(a2,n)
+    beta = _p_div(abw-aw*bw, a2w-aw*aw)
+    return beta
+
+ts_ta_beta1 = _Function(function=_ts_ta_beta, name='ts_ta_beta', arity=2, is_ts=True)
+ts_ta_dema1 = _Function(function=_ts_ta_dema, name='ts_ta_dema', arity=1, is_ts=True)
+ts_ta_kama1 = _Function(function=_ts_ta_kama, name='ts_ta_kama', arity=1, is_ts=True)
+ts_delay1 = _Function(function=_ts_delay, name='ts_delay', arity=1, is_ts=True)
+ts_stddev1 = _Function(function=_ts_stddev, name='ts_stddev', arity=1, is_ts=True)
+ts_delta1 = _Function(function=_ts_delta, name='ts_delta', arity=1, is_ts=True)
+ts_corr_n1 = _Function(function=_ts_corr_n, name='ts_corr_n', arity=2, is_ts=True)
+
+ts_cov_n1 = _Function(function=_ts_cov_n, name='ts_cov_n', arity=2, is_ts=True)
+ts_sum1 = _Function(function=_ts_sum, name='ts_sum', arity=1, is_ts=True)
+ts_mean1 = _Function(function=_ts_mean, name='ts_mean', arity=1, is_ts=True)
+ts_max1 = _Function(function=_ts_max, name='ts_max', arity=1, is_ts=True)
+ts_min1 = _Function(function=_ts_min, name='ts_min', arity=1, is_ts=True)
+ts_prod1 = _Function(function=_ts_prod, name='ts_prod', arity=1, is_ts=True)
+ts_wma1 = _Function(function=_ts_wma, name='ts_wma', arity=1, is_ts=True)
+ts_emals1 = _Function(function=_ts_emals, name='ts_emals', arity=2, is_ts=True)
+
+
+
+
+_ts_function_map = {
+    'ts_ta_beta': ts_ta_beta1,
+    'ts_ta_dema': ts_ta_dema1,
+    'ts_ta_kama': ts_ta_kama1,
+    'ts_delay': ts_delay1,
+    'ts_stddev': ts_stddev1,
+    'ts_delta': ts_delta1,
+    'ts_corr_n': ts_corr_n1,
+    'ts_cov_n': ts_cov_n1,
+    'ts_sum': ts_sum1,
+    'ts_mean': ts_mean1,
+    'ts_max': ts_max1,
+    'ts_min': ts_min1,
+    'ts_prod': ts_prod1,
+    'ts_wma': ts_wma1,
+    'ts_emals': ts_emals1
+}
+
+_fixed_function_map = {
+}

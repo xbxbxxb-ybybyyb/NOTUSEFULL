@@ -1,0 +1,43 @@
+Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
+Change Dir: /data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/opt/rh/devtoolset-11/root/usr/bin/gmake -f Makefile cmTC_9ebcb/fast && /opt/rh/devtoolset-11/root/usr/bin/gmake  -f CMakeFiles/cmTC_9ebcb.dir/build.make CMakeFiles/cmTC_9ebcb.dir/build
+gmake[1]: Entering directory '/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_9ebcb.dir/src.c.o
+/opt/rh/devtoolset-11/root/usr/bin/cc -DCMAKE_HAVE_LIBC_PTHREAD  -std=c99 -Wall -Wextra -Wundef -Wshadow -Wcast-align -Wcast-qual -Wstrict-prototypes  -o CMakeFiles/cmTC_9ebcb.dir/src.c.o -c /data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_9ebcb
+/usr/local/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9ebcb.dir/link.txt --verbose=1
+/opt/rh/devtoolset-11/root/usr/bin/cc  -std=c99 -Wall -Wextra -Wundef -Wshadow -Wcast-align -Wcast-qual -Wstrict-prototypes  CMakeFiles/cmTC_9ebcb.dir/src.c.o -o cmTC_9ebcb 
+/opt/rh/devtoolset-11/root/usr/libexec/gcc/x86_64-redhat-linux/11/ld: CMakeFiles/cmTC_9ebcb.dir/src.c.o: in function `main':
+src.c:(.text+0x2d): undefined reference to `pthread_create'
+/opt/rh/devtoolset-11/root/usr/libexec/gcc/x86_64-redhat-linux/11/ld: src.c:(.text+0x39): undefined reference to `pthread_detach'
+/opt/rh/devtoolset-11/root/usr/libexec/gcc/x86_64-redhat-linux/11/ld: src.c:(.text+0x45): undefined reference to `pthread_cancel'
+/opt/rh/devtoolset-11/root/usr/libexec/gcc/x86_64-redhat-linux/11/ld: src.c:(.text+0x56): undefined reference to `pthread_join'
+/opt/rh/devtoolset-11/root/usr/libexec/gcc/x86_64-redhat-linux/11/ld: src.c:(.text+0x6a): undefined reference to `pthread_atfork'
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [CMakeFiles/cmTC_9ebcb.dir/build.make:99: cmTC_9ebcb] Error 1
+gmake[1]: Leaving directory '/data/user/020063/c++/alpha/tmp/tmp.deKc4Q6m3W/cmake-build-debug/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_9ebcb/fast] Error 2
+
+
+Source file was:
+#include <pthread.h>
+
+static void* test_func(void* data)
+{
+  return data;
+}
+
+int main(void)
+{
+  pthread_t thread;
+  pthread_create(&thread, NULL, test_func, NULL);
+  pthread_detach(thread);
+  pthread_cancel(thread);
+  pthread_join(thread, NULL);
+  pthread_atfork(NULL, NULL, NULL);
+  pthread_exit(NULL);
+
+  return 0;
+}
+

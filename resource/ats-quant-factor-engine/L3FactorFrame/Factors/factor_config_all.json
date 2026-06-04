@@ -1,0 +1,24 @@
+{
+    "MDTime": [
+        {}
+    ],
+    "Timestamp": [
+        {}
+    ],
+    "SeqNo": [
+        {}
+    ],
+    "Sample1sFlag": [
+        {}
+    ],
+    "ActivePriceVolume": [
+        {
+            "interval": 3,
+            "price_spread": 0.05,
+            "active_volume": 400
+        }
+    ],
+    "FactorBuyWillingByPrice": [
+        {}
+    ]
+}

@@ -1,0 +1,40 @@
+from System.Factor import Factor
+import numpy as np
+
+
+class FactorFlex20RelAskAmtPerTrade(Factor):
+    def __init__(self, config, factorManager):
+        super().__init__(config, factorManager)
+        self.__window = self._getParameter("Window")
+        self.__longWindow = self._getParameter("LongWindow")
+
+        self.__askAmtPerTrade = self._getFactor(
+            {
+                "ClassName": "AskAmtPerTrade"
+            }
+        )
+        
+    def calculate(self):
+        amt = self._getLastNTickData('Amount', self.__longWindow)
+        avg_amt = np.nanmean(amt)
+        askAmtPerTradeList = self.__askAmtPerTrade.getFactorValueList()
+        avg_tickamt = np.nanmean(np.array(askAmtPerTradeList[-self.__window:]))
+        if avg_amt == 0:
+            rel_value = 0
+        else:
+            rel_value = avg_tickamt / avg_amt * 10
+        if np.isnan(rel_value):
+            rel_value = 0
+
+        self._addFactorValue(rel_value)
+
+
+
+
+
+
+
+
+
+
+

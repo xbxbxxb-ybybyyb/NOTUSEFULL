@@ -1,0 +1,16 @@
+{
+  "uat": {
+    "ip": "localhost",
+    "port":8848,
+    "user": "admin",
+    "passwd":"123456"
+  },
+  "prd": {
+    "ip": "localhost",
+    "port":8848,
+    "user": "admin",
+    "passwd":"123456"
+
+  }
+
+}

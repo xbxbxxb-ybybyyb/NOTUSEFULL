@@ -1,0 +1,46 @@
+import numpy as np
+from FactorBase import FactorBase
+
+class BuyActivePriceVolume(FactorBase):
+    def __init__(self, config, factorManager):
+        super().__init__(config, factorManager)
+        self.__interval = config.get("interval", 3) #10秒
+        self.price_spread = config.get("price_spread", 0.0012) # 价差
+        self.active_volume = config.get("active_volume", 400)
+
+    def calculate(self):
+        tickDataIndex = self.getPrevTick("SeqNo")
+        tradeIndex = self.getPrevTrade("SeqNo")
+        asks_price = self.getPrevTick('AskPrice')
+        bids_price = self.getPrevTick("BidPrice")
+
+        # 查询未来数据
+        trade_bs_flag = self.getPrevSecTrade("BSFlag", -self.__interval)
+        trade_price = self.getPrevSecTrade("Price", -self.__interval)
+        trade_volume = self.getPrevSecTrade("Volume", -self.__interval)
+        seq_no = self.getPrevSecTrade("SeqNo", -self.__interval)
+
+
+        if tickDataIndex==848865:
+            a = 1
+
+        if len(asks_price) < 2:
+            factor_value = 0
+        else:
+            factor_value = 0
+            if tickDataIndex == tradeIndex:
+                currentTickAskP0, currentTickBidP0 = asks_price[0], bids_price[0]
+                # 条件1：价差
+                mid_price = (currentTickAskP0+currentTickBidP0)/2
+                if (currentTickAskP0-0.01-(currentTickBidP0+0.01))/ mid_price > self.price_spread:
+                    # 条件2：主动买且买入价格高于基准价
+                    bid_base_price = currentTickBidP0 + 0.01
+                    ask_base_price = currentTickAskP0 - 0.01
+                    active_buy_volume =  np.sum(trade_volume[(trade_bs_flag == 1) & (trade_price >= bid_base_price*1.0008)])
+                    active_sell_volume =  np.sum(trade_volume[(trade_bs_flag == 2) & (trade_price <= ask_base_price*0.9992)])
+                    # 条件3：主动买大于某个值
+                    if active_buy_volume > self.active_volume:
+                        factor_value = 1#active_buy_volume-active_sell_volume
+                    else:
+                        factor_value = -1
+        self.addFactorValue(factor_value)

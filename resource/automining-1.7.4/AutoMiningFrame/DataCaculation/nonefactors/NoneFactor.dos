@@ -1,0 +1,11 @@
+module NoneFactor::NoneFactor
+
+defg bigOrder(No, Qty){
+    if (flatten(No).dropna().size()==0){return 0.0}
+    data = (select sum(Q) from table(flatten(No) as N,
+                                     flatten(Qty) as Q) group by N)
+    eachQ = data.sum_Q
+    level = mean(eachQ) +std(eachQ)
+    big_data = sum(iif(eachQ>=level,eachQ,0))
+    return big_data
+}

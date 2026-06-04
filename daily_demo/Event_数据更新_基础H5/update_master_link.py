@@ -1,0 +1,78 @@
+# -*- coding: utf-8 -*-
+"""
+# data update master
+"""
+
+import os
+from multifactor.data.utils import *
+from update_wind import update_wind
+from updater_universe import updater_universe
+from BarraRiskFactor_daily import update_risk_factor_daily
+from update_wind_htsc import first_job
+from update_wind_fin import update_wind_fin
+from link import LinkMessage
+#返回交易日的，缺省值nan，返回当天
+linkins = LinkMessage()
+sdate,edate,_= check_update_date()
+
+print(sdate,edate)
+
+flag_root = '/data/group/800080/warehouse/prod/LOCAL_DATA/FLAG/' + str(edate) + '/'
+if not os.path.exists(flag_root):
+    os.makedirs(flag_root)
+
+
+linkins.sendMessage('[定时任务][金工]原始wind数据开始下载')
+flag_path1 = flag_root + str(edate) + '_' + 'RDF.start'
+with open(flag_path1,'w') as file:
+    pass 
+first_job(sdate,edate)  #云上原表 to rdf_csv to rdf_h5
+flag_path1 = flag_root + str(edate) + '_' + 'RDF.success'
+with open(flag_path1,'w') as file:
+    pass 
+linkins.sendMessage('[定时任务][金工]原始wind数据下载完成')
+    
+
+#价量数据和提取出来的财务数据
+linkins.sendMessage('[定时任务][金工]加工表开始计算')
+flag_path1 = flag_root + str(edate) + '_' + 'MD.start'
+with open(flag_path1,'w') as file:
+    pass 
+update_wind(sdate,edate) #rdf_h5 to FDD_csv MD_csv to FDD_h5 MD_h5
+flag_path1 = flag_root + str(edate) + '_' + 'MD.success'
+with open(flag_path1,'w') as file:
+    pass 
+linkins.sendMessage('[定时任务][金工]加工表计算完成')
+
+
+linkins.sendMessage('[定时任务][金工]Universe开始计算')
+flag_path1 = flag_root + str(edate) + '_' + 'UNIV.start'
+with open(flag_path1,'w') as file:
+    pass 
+updater_universe(sdate,edate) # rdf_h5 to universe to universe_csv to universe_h5
+flag_path1 = flag_root + str(edate) + '_' + 'UNIV.success'
+with open(flag_path1,'w') as file:
+    pass 
+linkins.sendMessage('[定时任务][金工]Universe计算完成')
+   
+
+
+# flag_path1 = flag_root + str(edate) + '_' + 'RISK.start'
+# with open(flag_path1,'w') as file:
+    # pass   
+# update_risk_factor_daily(sdate,edate)
+# flag_path1 = flag_root + str(edate) + '_' + 'RISK.success'
+# with open(flag_path1,'w') as file:
+    # pass 
+    
+
+
+
+
+flag_path1 = flag_root + str(edate) + '_' + 'FDD.start'
+with open(flag_path1,'w') as file:
+    pass 
+#update_wind_fin(sdate,edate) #windvip to windvip_csv to wind_vip_h5
+flag_path1 = flag_root + str(edate) + '_' + 'FDD.success'
+with open(flag_path1,'w') as file:
+    pass 
