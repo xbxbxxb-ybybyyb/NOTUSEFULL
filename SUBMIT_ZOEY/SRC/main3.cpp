@@ -1,0 +1,573 @@
+#include<string>
+#include<iostream>
+#include<sys/mman.h>
+#include<sys/types.h>
+#include<fcntl.h>
+#include<string.h>
+#include<stdio.h>
+#include<unistd.h>
+#include<assert.h>
+#include <bits/stdc++.h>
+#include "SRC/framework/graphnode.h"
+#include "SRC/framework/niobase.h"
+#include "SRC/framework/registerdata.h"
+#include "SRC/framework/register.h"
+#include "SRC/framework/util.h"
+
+using namespace std;
+
+
+
+namespace GLOBAL
+{
+  map<string, int> ii_to_id;
+  const int MAXII = 1000;
+  double global_price[MAXII];
+  double global_qty[MAXII];
+  std::string global_body[MAXII];
+  std::string global_headline[MAXII];
+  int64_t global_timestamp[MAXII];
+}
+
+//////////////////////////////////////////////
+//
+
+/* @brief TimeLoc use int64_t to keep the timestamp
+ */
+
+class TimeLoc:public GraphNodeBase
+{
+  NIO_MATRIX<int64_t> sig;
+  int ii;
+public:
+  void Initialize(const string &para)
+  {
+    ii = GLOBAL::ii_to_id.at(para);
+    AddDailyData(&sig, tag);
+  }
+  void LoadData()
+  {
+    int64_t& output = *(sig.GetBasePtr());
+    output = GLOBAL::global_timestamp[ii];
+  }
+};
+
+REGISTER(TimeLoc);
+
+
+/* @brief VolumeLoc use double to keep the trading volume
+ */
+class VolumeLoc:public GraphNodeBase
+{
+  NIO_MATRIX<double> sig;
+  int ii;
+public:
+  void Initialize(const string &para)
+  {
+    ii = GLOBAL::ii_to_id.at(para);
+    AddDailyData(&sig, tag);
+  }
+  void LoadData()
+  {
+    double& output = *(sig.GetBasePtr());
+    output = GLOBAL::global_qty[ii];
+  }
+};
+
+REGISTER(VolumeLoc);
+
+
+/* @brief PriceLoc use double to keep the trade price
+ */
+
+class PriceLoc:public GraphNodeBase
+{
+  NIO_MATRIX<double> sig;//merge many VD to VVD
+  int ii;
+public:
+  void Initialize(const string &para)
+  {
+    ii = GLOBAL::ii_to_id.at(para);
+    AddDailyData(&sig, tag);
+  }
+  void LoadData()
+  {
+    double& output = *(sig.GetBasePtr());
+    output = GLOBAL::global_price[ii];
+  }
+
+};
+
+REGISTER(PriceLoc);
+
+/* @brief StatDiff keep the price diff feature
+ * @param depend on price node
+ * @return 
+ */
+
+class StatDiff:public GraphNodeBase
+{
+  NIO_MATRIX<double> sig;//merge many VD to VVD
+
+  deque<double> dq;
+public:
+  void Initialize(const string &para)
+  {
+    AddDailyData(&sig, tag);
+  }
+  void LoadData()
+  {
+    const NIO_MATRIX<double> &nio_ft = dr->GetData<NIO_MATRIX, double>("price");
+    const double& prc = *(nio_ft.GetBasePtr());
+
+    dq.push_back(prc);
+    while (dq.size() > 2) dq.pop_front();
+    
+    double& output = *(sig.GetBasePtr());
+    if (dq.size() <= 1) output = 0;//define price diff = 0 when only one sample
+    else output = dq.back() - dq[0];//dq[1] - dq[0]
+  }
+};
+
+REGISTER(StatDiff);
+
+
+/* @brief StatMean keep the price mean
+ * @param depend on price node
+ * @return  mean price
+ */
+
+class StatMean:public GraphNodeBase
+{
+  NIO_MATRIX<double> sig;
+  double cum_sum;
+  double cum_cnt;
+public:
+  void Initialize(const string &para)
+  {
+    cum_sum = 0;
+    cum_cnt = 0;
+    AddDailyData(&sig, tag);
+  }
+  void LoadData()
+  {
+    const NIO_MATRIX<double> &nio_ft = dr->GetData<NIO_MATRIX, double>("price");
+    const double& prc = *(nio_ft.GetBasePtr());
+    
+
+    //each time we get a new price observation, we need to update cummulative sum and cnt
+    cum_sum += prc;
+    cum_cnt += 1.0;
+    
+    double& output = *(sig.GetBasePtr());
+
+    //mean price always = cummulative sum / cummulative cnt
+    output = (cum_cnt > 0)? cum_sum / cum_cnt:0.0;
+    std::cout<<"FRAMEWORK(" + tag + "):"<<output<<std::endl;
+  }
+};
+
+REGISTER(StatMean);
+
+
+/* @brief StatSum keep the volume sum
+ * @param depend on volume node
+ * @return sum of volume
+ */
+class StatSum:public GraphNodeBase
+{
+  NIO_MATRIX<double> sig;
+  double cum_sum;
+public:
+  void Initialize(const string &para)
+  {
+    cum_sum = 0;
+    AddDailyData(&sig, tag);
+  }
+  void LoadData()
+  {
+    const NIO_MATRIX<double> &nio_ft = dr->GetData<NIO_MATRIX, double>("volume");
+    const double& vol = *(nio_ft.GetBasePtr());
+
+    //each time we get a new qty observation, we need to update cummulative sum
+    cum_sum += vol;
+
+    double& output = *(sig.GetBasePtr());
+
+    //output is just the cum_sum
+    output = cum_sum;
+  }
+};
+
+REGISTER(StatSum);
+
+/* @brief HeadLine keeps the header of news
+ */
+class HeadLine:public GraphNodeBase
+{
+  NIO_MATRIX<string> sig;
+  int ii;
+public:
+  void Dependencies() { }
+  void Initialize(const string &para)
+  {
+    ii = GLOBAL::ii_to_id.at(para);
+    AddDailyData(&sig, tag);
+  }
+  void LoadData()
+  {
+    string& output = *(sig.GetBasePtr());
+    output = GLOBAL::global_headline[ii];
+  }
+};
+REGISTER(HeadLine);
+
+/* @brief HeadLine keeps the body of news
+ */
+class Body:public GraphNodeBase
+{
+  NIO_MATRIX<string> sig;
+  int ii;
+public:
+  void Dependencies() { }
+  void Initialize(const string &para)
+  {
+    ii = GLOBAL::ii_to_id.at(para);
+    AddDailyData(&sig, tag);
+  }
+  void LoadData()
+  {
+    string& output = *(sig.GetBasePtr());
+    output = GLOBAL::global_body[ii];
+  }
+
+};
+
+REGISTER(Body);
+
+
+/* @brief if headline is positive result is 1 else 0
+ */
+
+class HeadLinePositive:public GraphNodeBase
+{
+  NIO_MATRIX<int> sig;
+public:
+  void Initialize(const string &para)
+  {
+    AddDailyData(&sig, tag);
+  }
+  void LoadData()
+  {
+    const NIO_MATRIX<string> &nio_ft = dr->GetData<NIO_MATRIX, string>("headline");
+    const string& str = *(nio_ft.GetBasePtr());
+    int& output = *(sig.GetBasePtr());
+    if (str.find("GOOD") != string::npos) {
+      output = 1;
+    } else {
+      output = 0;
+    }
+  }
+
+};
+
+REGISTER(HeadLinePositive);
+
+
+/* @brief if headline is negative result is 1 else 0
+ */
+class HeadLineNegative:public GraphNodeBase
+{
+  NIO_MATRIX<int> sig;
+public:
+  void Initialize(const string &para)
+  {
+    AddDailyData(&sig, tag);
+  }
+  void LoadData()
+  {
+    const NIO_MATRIX<string> &nio_ft = dr->GetData<NIO_MATRIX, string>("headline");
+    const string& str = *(nio_ft.GetBasePtr());
+    int& output = *(sig.GetBasePtr());
+    if (str.find("BAD") != string::npos) {
+      output = 1;
+    } else {
+      output = 0;
+    }
+  }
+};
+
+REGISTER(HeadLineNegative);
+
+
+/* @brief if body is negative result is 1 else 0
+ */
+
+class BodyNegative:public GraphNodeBase
+{
+  NIO_MATRIX<int> sig;
+public:
+  void Initialize(const string &para)
+  {
+    AddDailyData(&sig, tag);
+  }
+  void LoadData()
+  {
+    const NIO_MATRIX<string> &nio_ft = dr->GetData<NIO_MATRIX, string>("body");
+    const string& str = *(nio_ft.GetBasePtr());
+    int& output = *(sig.GetBasePtr());
+    if (str.find("BAD") != string::npos) {
+      output = 1;
+    } else {
+      output = 0;
+    }
+  }
+
+};
+
+REGISTER(BodyNegative);
+
+/* @brief if body is positive result is 1 else 0
+ */
+
+class BodyPositive:public GraphNodeBase
+{
+  NIO_MATRIX<int> sig;
+public:
+  void Initialize(const string &para)
+  {
+    AddDailyData(&sig, tag);
+  }
+  void LoadData()
+  {
+    const NIO_MATRIX<string> &nio_ft = dr->GetData<NIO_MATRIX, string>("body");
+    const string& str = *(nio_ft.GetBasePtr());
+    int& output = *(sig.GetBasePtr());
+    if (str.find("GOOD") != string::npos) {
+      output = 1;
+    } else {
+      output = 0;
+    }
+  }
+};
+
+REGISTER(BodyPositive);
+
+
+/* @brief if any event happens(headline positive/negative or body positive/negative) 
+ */
+class EventMerger:public GraphNodeBase
+{
+  NIO_MATRIX<int> sig;//merge many VD to VVD
+public:
+  void Initialize(const string &para)
+  {
+    AddDailyData(&sig, tag);
+  }
+  void LoadData()
+  {
+
+    const NIO_MATRIX<int> &nio_ft1 = dr->GetData<NIO_MATRIX, int>("headline_positive");
+    const NIO_MATRIX<int> &nio_ft2 = dr->GetData<NIO_MATRIX, int>("headline_negative");
+    const NIO_MATRIX<int> &nio_ft3 = dr->GetData<NIO_MATRIX, int>("body_positive");
+    const NIO_MATRIX<int> &nio_ft4 = dr->GetData<NIO_MATRIX, int>("body_negative");
+
+    const int& v1 = *(nio_ft1.GetBasePtr());
+    const int& v2 = *(nio_ft2.GetBasePtr());
+    const int& v3 = *(nio_ft3.GetBasePtr());
+    const int& v4 = *(nio_ft4.GetBasePtr());
+
+    int& output = *(sig.GetBasePtr());
+    output = (v1 | v2 | v3 | v4) ?1:0;//if any event happens
+  }
+};
+REGISTER(EventMerger);
+
+
+/* @brief if any event happens, we dump the timestamp and some feature
+ */
+class FeatureDumper:public GraphNodeBase
+{
+  ofstream out;
+public:
+  void Initialize(const string &para)
+  {
+    string output_file = "DATA/output_from_EXE3_" + para + ".csv";
+    out.open(output_file.c_str(), std::ios_base::out);
+    assert(!out.fail());
+  }
+  void LoadData()
+  {
+
+    const NIO_MATRIX<int64_t> &nio_ft0 = dr->GetData<NIO_MATRIX, int64_t>("time");
+    const NIO_MATRIX<int> &nio_ft1 = dr->GetData<NIO_MATRIX, int>("any_event");
+    const NIO_MATRIX<double> &nio_ft2 = dr->GetData<NIO_MATRIX, double>("price_diff");
+    const NIO_MATRIX<double> &nio_ft3 = dr->GetData<NIO_MATRIX, double>("price_mean");
+    const NIO_MATRIX<double> &nio_ft4 = dr->GetData<NIO_MATRIX, double>("vol_sum");
+
+    const int64_t& v0 = *(nio_ft0.GetBasePtr());
+    const int& v1 = *(nio_ft1.GetBasePtr());
+    const double& v2 = *(nio_ft2.GetBasePtr());
+    const double& v3 = *(nio_ft3.GetBasePtr());
+    const double& v4 = *(nio_ft4.GetBasePtr());
+
+    if (v1 == 1) {//some event happened
+      out<<v0<<","<<v2<<","<<v3<<","<<v4<<endl;
+    }
+  }
+};
+REGISTER(FeatureDumper);
+
+
+int main(int argc, char *argv[])
+{
+  //1. we define the node of the graph, push the name of the node to vector<string>node
+  //and push the class name for example TimeLoc(we must inplement) to vector<string> node_class_name
+  vector<string> node;
+  vector<string> node_class_name;
+  node.push_back("time")              ; node_class_name.push_back("TimeLoc")          ;
+  node.push_back("volume")            ; node_class_name.push_back("VolumeLoc")        ;
+  node.push_back("price")             ; node_class_name.push_back("PriceLoc")         ;
+  node.push_back("price_diff")        ; node_class_name.push_back("StatDiff")         ;
+  node.push_back("price_mean")        ; node_class_name.push_back("StatMean")         ;
+  node.push_back("vol_sum")           ; node_class_name.push_back("StatSum")          ;
+  node.push_back("headline")          ; node_class_name.push_back("HeadLine")         ;
+  node.push_back("body")              ; node_class_name.push_back("Body")             ;
+  node.push_back("any_event")         ; node_class_name.push_back("EventMerger")      ;
+  node.push_back("headline_negative") ; node_class_name.push_back("HeadLineNegative") ;
+  node.push_back("headline_positive") ; node_class_name.push_back("HeadLinePositive") ;
+  node.push_back("body_negative")     ; node_class_name.push_back("BodyNegative")     ;
+  node.push_back("body_positive")     ; node_class_name.push_back("BodyPositive")     ;
+  node.push_back("feature_dumper")    ; node_class_name.push_back("FeatureDumper")    ;
+
+
+  
+  
+  //2. create a name to id map, name_to_id[node's name] = node's id in the array
+  map<string, int> name_to_id;//map name to id
+  for (size_t i = 0;i < node.size();++i) name_to_id[node[i]] = i;
+  
+
+  //3. register the dependency, for example str_dependency["price_diff"] = {"price"} 
+  //means node price_diff depends on price, we need to calculate price first
+  //
+  map<string, vector<string>> str_dependency;
+  str_dependency["price_diff"] = {"price"};
+  str_dependency["price_mean"] = {"price"};
+  str_dependency["vol_sum"] = {"volume"};
+  str_dependency["headline_negative"] = {"headline"};
+  str_dependency["headline_positive"] = {"headline"};
+  str_dependency["body_negative"] = {"body"};
+  str_dependency["body_positive"] = {"body"};
+  str_dependency["any_event"] = {"headline_negative", "headline_positive", "body_negative", "body_positive"};
+  str_dependency["feature_dumper"] = {"time", "price_diff", "price_mean", "vol_sum", "any_event"};
+
+
+
+
+  /* following is graph of this example, it should be a DAG. Some nodes can have no edge, it can be calculated
+   * independently.
+
+  time----------------------------------------------------\
+  price-->price_diff---------------------------------------\
+       \->price_mean----------------------------------------\
+  volume--->vol_sum------------------------------------------\
+  headline--->headline_negative -----------> any event-------->feature_dumper
+          \-->headline_positive ----------/
+  body--->body_negative------------------/
+          \-->body_positive-------------/
+
+  */
+
+
+
+
+
+
+
+  //4. use toposort to create correct order of calculation
+  vector<set<int>> parents(node.size());
+  for (auto &it:str_dependency) {
+    int mid = name_to_id.at(it.first);
+    for (auto &is:it.second) {
+      parents[mid].insert(name_to_id.at(is));
+    }
+  }
+
+  vector<int> dmgr_order;
+  vector<int> dmgr_layer;
+
+  TopoSort(parents, dmgr_order, dmgr_layer);
+
+  for (auto &it:dmgr_order) {
+    cout<<it<<endl;
+  }
+
+
+  //5. for each stock, create a map, map ticker to stock id
+  vector<string> iis = {"AAPL", "GOOG", "JPM"};
+  assert(iis.size() <= GLOBAL::MAXII);
+  for (size_t i = 0;i < iis.size();++i) GLOBAL::ii_to_id[iis[i]] = i;
+
+
+
+  //6. for each stock, we need to graph
+  using GRAPHRUNNER = std::vector<shared_ptr<GraphNodeBase>>;
+  vector<GRAPHRUNNER> grunners(iis.size());//each stock has a runner
+  vector<class DataRegister> drs(iis.size());//each stock has a DataRegister
+
+  
+  //7. for each stock, init the graph node independently
+  for (size_t z = 0;z < iis.size();++z) {
+    auto &dmgr_ptr_ = grunners[z];
+    //load ptr
+    dmgr_ptr_ = std::vector<shared_ptr<GraphNodeBase>> (node.size(), nullptr);
+    for (int i = 0;i < (int)node.size();++i) {
+      dmgr_ptr_[i] = std::static_pointer_cast<GraphNodeBase>(GetClassFromName(node_class_name[i]));
+      dmgr_ptr_[i]->mid = i;
+      dmgr_ptr_[i]->tag = node[i];
+      dmgr_ptr_[i]->SetDataRegister(&drs[z]);
+      //cout<<node[i]<<endl;
+    }
+    //8. Before start the calculation logic, we need to call the Initialize function for each node.
+    //It helps to initialize some states and register the data
+    for (size_t i = 0;i < dmgr_order.size();++i) {
+      dmgr_ptr_[i]->Initialize(iis[z]);//use ticker as a parameter
+    }
+  }
+
+
+
+
+  //8. go through the data, and update the graph
+
+  
+  ifstream in("DATA/data.csv");
+  string ln;
+  while (getline(in, ln)) {//for each of data
+    std::vector<std::string> tk = split(ln, ','); 
+    //1744246601,GOOG,106,778,BAD header,NEUTRAL body
+
+    string local_ii = (tk[1]);//
+
+    int local_ii_id = GLOBAL::ii_to_id.at(local_ii);//get instrument's id
+
+    GLOBAL::global_timestamp[local_ii_id] = stoll(tk[0]);
+    GLOBAL::global_price[local_ii_id] = atof(tk[2].c_str());
+    GLOBAL::global_qty[local_ii_id] = atof(tk[3].c_str());
+    GLOBAL::global_headline[local_ii_id] = std::move(tk[4]);
+    GLOBAL::global_body[local_ii_id] = std::move(tk[5]);
+
+    //check_price_sum += GLOBAL::global_price;
+    //check_price_cnt += 1.0;
+
+    auto &dmgr_ptr_ = grunners[local_ii_id];
+    for (size_t i = 0;i < dmgr_order.size();++i) {
+      int local_mid = dmgr_order[i];
+      dmgr_ptr_[local_mid]->LoadData();
+    }
+
+    //std::cout<<"DO NOT USE FRAMEWORK MEANPRC="<<check_price_sum / check_price_cnt<<std::endl;
+  }
+  return 0;
+}

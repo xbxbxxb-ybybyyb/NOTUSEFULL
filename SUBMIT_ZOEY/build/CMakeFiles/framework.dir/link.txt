@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -std=c++11 -fPIC -Wall -Wextra -fopenmp -O3 -Wno-unused-parameter  -shared -Wl,-soname,libframework.so -o libframework.so CMakeFiles/framework.dir/SRC/framework/graphnode.cc.o CMakeFiles/framework.dir/SRC/framework/register.cc.o CMakeFiles/framework.dir/SRC/framework/registerdata.cc.o CMakeFiles/framework.dir/SRC/framework/util.cc.o  -lstdc++fs 

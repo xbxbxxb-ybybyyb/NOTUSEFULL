@@ -1,0 +1,36 @@
+useDynLib(buckshot)
+
+import(methods)
+import(Matrix)
+
+importFrom(stats,
+  coef,
+  fitted,
+  na.omit,
+  predict,
+  terms)
+
+exportClasses(
+  BuckshotData,
+  BuckshotModel
+)
+
+exportMethods(
+  buckshot,
+  BuckshotData,
+  designMatrix,
+  labels,
+  
+  coef,
+  fitted,
+  predict
+)
+
+export(
+  lasso,
+  logreg,
+  
+  # data,
+  
+  read.matrix.mart
+)

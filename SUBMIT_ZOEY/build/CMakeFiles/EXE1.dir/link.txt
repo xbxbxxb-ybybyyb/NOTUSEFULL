@@ -1,0 +1,1 @@
+/usr/bin/c++ -std=c++11 -fPIC -Wall -Wextra -fopenmp -O3 -Wno-unused-parameter  CMakeFiles/EXE1.dir/SRC/main1.cpp.o -o EXE1  -Wl,-rpath,/home/yzhan/SUBMIT/build -lpthread -ldl libframework.so -lstdc++fs 

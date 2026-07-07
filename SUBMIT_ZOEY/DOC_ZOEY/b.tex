@@ -1,0 +1,906 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{color}
+\usepackage{CJKutf8}
+\usepackage{enumitem}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{pgf}
+\usepackage{tikz}
+\usepackage{geometry}
+\usepackage[section]{placeins}
+\geometry{a4paper,scale=0.9}
+%\documentclass[UTF8]{ctexart}  %使用中文版的article文档类型排版，并选择UTF8编码格式
+
+\usepackage{amsmath}  %使用宏包，这里使用的是调用公式宏包，可以调用多个宏包
+\usepackage{graphicx}
+\newtheorem{thm}{}
+%\newcommand\degree{^\circ} 
+\begin{document}  %开始写文章
+\begin{CJK}{UTF8}{gbsn}
+\begin{spacing}{1.5}
+\title{AlphaFactorGenerator}  %大括号里填写标题
+\author{xz}  %大括号里填写作者姓名
+\date{\today}    %大括号里填写\today会自动生成当前的日期
+\maketitle     %我们写了以上内容以后一定要添加这个，制作标题，否则上面的内容都是无效的。
+\begin{abstract}         %摘要部分
+\small \centering This is a document for AlphaFactorGenerator
+\end{abstract}
+  \setcounter{tocdepth}{2}
+\tableofcontents  %表示目录部分开始
+%\section{概览}  %目录的前缀页面都会自动排版不需要手动排版
+%\label{sec:ancient}
+
+
+%
+%这是一款辅助Alpha生产研究的产品。使用者可以通过在本地准备好固定格式的数据，程序能够自动生成好基于给定输入的因子。 产品的设计初衷是将Alpha研发中的数据准备、计算逻辑、评估因子绩效三者分离，将数据准备和评估因子部分留给用户，将一些因子构造过程中常见的逻辑部分进行提取和总结。\\
+%- 产品总结了大量常见的截面信号处理手段，方便生成信号用于生产研究。\\
+%- 产品优化了因子生成的流程，加速因子搜索迭代过程。\\
+%- 产品提供基于单变量的计算逻辑和基于双变量的计算逻辑。\\
+%- 产品提供的计算逻辑简单清晰，多分解，少拼凑, 控制输入变量数量和输入表达式层数，减少拟合程度。\\
+%- 可以根据客户需求添加适量新的计算逻辑。\\
+%
+
+
+
+\section{Instruction To Functions}
+
+\subsection{Operators Category}
+
+Based on the output data type or meaning, operators can be roughly divided into the following four categories:\\
+
+
+%算子根据输出数据类型或者含义大体分为以下四类
+
+\begin{itemize}
+%\item[*] 第一类对应最终的输出信号(最终因子值)，这类算子用FINAL作为前缀
+\item[*] The first category corresponds to the final output signal (final factor value), and these operators use 'FINAL' as a prefix.
+%\item[*] 第二类对应输出中间变量，可以理解为是对输入矩阵进行调整或者变换，此类算子不作为最终信号，而是一个中间结果，这类算子以ADJ作为前缀
+\item[*] The second category corresponds to intermediate variables in the output, which can be understood as adjustments or transformations of the input matrix. These operators are not the final signals, but rather intermediate results. Operators in this category have the prefix 'ADJ'.
+%\item[*] 第三类对应输出01矩阵,可以理解为是对过滤出一些区间，此类算子不作为最终信号，也是一个中间结果，这类算子以FILTER作为前缀
+\item[*] The third category corresponds to the output of binary $(0/1)$ matrices, which can be understood as filtering out certain intervals. These operators are not the final signals but also intermediate results. Operators in this category have the prefix 'FILTER'.
+%\item[*] 第四类只有一个，$ADJ\_creategroup$，它会根据输入创造出股票分组。
+\item[*] The fourth category consists of only one operator, $ADJ\_creategroup$, which creates stock groups based on the input.
+\end{itemize}
+
+
+
+
+
+
+
+
+\section{Document For AlphaFactorGenerator}
+
+\subsection{Introduction}
+
+%Feature extraction is very important in alpha research. We need to deal with different datasets. AlphaFactorGenerator collect many common
+%functions for cross-section and timeseries data. AlphaFactorGenerator will generate a large amount of features for your alpha research in 
+%a short time. 
+
+This is a tool designed to assist in Alpha production research. Users can prepare data in a fixed format locally, and the program can automatically generate factors based on the given input. The design intention of the product is to separate data preparation, calculation logic, and factor performance evaluation in Alpha research and development, leaving data preparation and factor evaluation to the users, while extracting and summarizing common logic parts in factor construction process.
+
+
+
+\begin{itemize}
+\item[*] This tool summarizes a wide range of common cross-sectional signal processing methods, making it convenient to generate signals for production research.
+\item[*] This tool optimizes the process of factor generation and accelerates the factor search process.
+\item[*] This tool provides calculation logic based on univariate and bivariate analysis. 
+\item[*] This tool can help extract temporal and cross-sectional features.
+%\item[*] If you find this tool useful for your research, you can contact us at 793063983@qq.com to obtain a standalone .so file for your production (subject to a certain fee). Alternatively, if you have any questions regarding its usage, feel free to reach out to us.
+
+\end{itemize}
+
+\subsection{Quick Start}
+
+\subsubsection{Install Docker}
+https://www.runoob.com/docker/windows-docker-install.html. This is a web site show you how to install docker.
+\subsubsection{Download image}
+https://pan.baidu.com/s/1yhDU3qQdyQp3\_HLJnhMnQQ  password:7ljg
+%\subsubsection{准备数据}
+%
+%最后32分钟的分钟数据的收益率和成交量分别存于目录src0与src1。
+
+\subsubsection{Run Demo}
+- Start the image \\
+sudo docker run -it centos-alphafactorgen-0.0.3 /bin/bash\\
+- Change to the directory\\
+cd /home/factorgen0.0.1\\
+- Run the demo\\
+./EXE \\
+- Check the result\\
+result is stored in /tmp/output*.csv, the first example will generate 4700 new features for the dataframe specified by AA.\\
+- To run other demo or data, you need to change test.cpp, and use compile.sh to compile the EXE. For example, the second example will generate 34000 fetures for two input dataframes. \\
+- If your computer has limited memory, you may encounter a 'core dump'. Please try using a smaller number of formulas for testing. \\
+
+
+
+
+
+
+
+\subsection{Feature Extraction In Alpha Research}
+
+%在股票Alpha策略研究中，第di天我们需要生成一组预测值作为当天的因子值，而大多数情况下我们会利用前n天的一些其他信息辅助生成当天的因子值(用$alpha[di]$表示)。\\
+
+In stock Alpha strategy research, we need to generate a set of forecast values as the factor values for a given day, and in most cases, we utilize some other information from the previous n days to assist in generating the factor values for the current day($alpha[di]$).\\
+  \centerline{$alpha[di] = F(S)$}
+where  \\
+%$alpha[i]$:表示当天因子值，是一个向量，其长度等于股票数量;\\
+$alpha[i]$:epresents the factor values of the current day, which is a vector with a length equal to the number of stocks.\\
+%$F$:表示我们做决策的函数;  \\
+$F$:represents the function we use for decision-making.  \\
+%$S$:表示往前若干天的一些信息的集合, 可以是表示一些矩阵集合，甚至可以包含一些股票关系网络。  \\
+$S$:represents a collection of information from the previous several days, which can be in the form of matrix sets and may even include a network of stock relationships.\\
+
+%下面是一些例子:  \\
+Here are some examples:  \\
+  %1. 例如$S = \{AA\}$, AA取为股票过去二十天收益率，可以排成一个$N \times M$的矩阵，其中$N=20$,$M=$股票数量。 函数$F$取为最近4天最大值，那么我们最终的信号值可以表示为$FINAL\_max(AA,4).$  \\
+
+  1. For example, let's consider $S = \{AA\}$, where $AA$ represents the stock's past 20-day returns. We can arrange this information as an $N \times M$ matrix, where $N = 20$ and $M$ represents the number of stocks.
+  If we define the function $F$ to be the maximum value of the last 4 days, then the final signal value can be represented as $FINAL\_max(AA,4).$.
+
+  Here's the Python code:\\
+  \centerline{def FINAL\_max(AA, sz): return AA.iloc[-sz:].max()}
+  \\
+
+
+
+  %2. 例如$S = \{AA, MM\}$, AA取股票过去二十天收益率，可以排成一个$N \times M$的矩阵，其中$N=20$,$M=$股票数量；MM取为一个$0/1$矩阵，当股票当天上涨时记为1否则为0， BB的大小和AA相同。 $F$取为:$MM$大于0对应的样本的标准差, 我们最终的信号值记为$FINAL\_fstd(AA,MM). $ \\
+  2. For example, let $S = \{AA, MM\}$. $AA$ represents the stock's past twenty-day returns and can be arranged into an $N \times M$ matrix, where $N=20$ represents the number of days and $M$ represents the number of stocks. $MM$ is a binary matrix where 1 indicates an increase in the stock's price for the day, and 0 indicates a decrease. $MM$ has the same dimensions as $AA$. We define $F$ as the standard deviation of the samples where $MM$ is greater than 0. The final signal value is denoted as $FINAL\_fstd(AA,MM)$.\\
+  Here's the Python code:\\
+  \small \centerline {def FINAL\_fstd(AA, MM): return AA[pd.DataFrame(index=MM.index, columns=MM.columns, data=MM.values \textgreater 0)].std( axis=0) }
+  \normalsize
+  \\
+  \\
+  %3. 例如$S = \{AA, BB\}$, AA取股票过去二十天价格，可以排成一个$N \times M$的矩阵，其中$N=20$,$M=$股票数量;BB取为股票成交量， BB的大小和AA相同。 $F$取为AA用BB加权后的信号。  \\
+  3. For example, let's consider $S = \{AA, BB\}$. AA represents the stock prices for the past twenty days and can be arranged in an $N \times M$ matrix, where $N=20$ and $M$ represents the number of stocks. BB represents the trading volume of the stocks and has the same dimensions as AA. The factor $F$ is calculated by weighting AA with BB.\\
+  Here's the Python code:\\
+  \centerline{ def FINAL\_weighted(x, y): return (x * y.abs()).sum() / (y.abs()).sum() }
+  \\
+
+  %4. 例如$S = \{AA, GG\}$, AA取股票过去二十天价格，可以排成一个$N \times M$的矩阵，其中$N=20$,$M=$股票数量;GG可以取为股票关系网络. $F$可以取为同时利用到股票关系和收益率的函数。  \\
+%- 结合前文例子，我们用于产生信号所集合**S**里可能包含不同类型的信息，这里统一做一下说明:  
+%  1. 只用AA,BB,MM,RR,GG表示输入信号。  
+%  2. AA,BB,MM,RR均为N * M的矩阵,GG表示股票关系网络输入。  
+%  3. MM是01矩阵，AA,BB,RR均为连续变量型矩阵，其中RR通常用于指定风险因子数据。  
+%例子中是以天为单位，实际中可能会遇到季度为单位(基本面数据), 分钟为单位(分钟数据)，以及其他情况，都可以类似处理。程序本身只负责将矩阵变换成信号，而不会关心矩阵的不同行之间代表时间尺度的含义。
+
+
+
+
+%\subsection{How to run demo}
+%\label{subsec:demo}
+%
+%\subsubsection{Install Docker}
+%https://www.runoob.com/docker/windows-docker-install.html, this is a web site show you how to install docker
+%\subsubsection{Download image}
+%下载地址与客服沟通。TODO
+%
+%%\subsubsection{准备数据}
+%%
+%%最后32分钟的分钟数据的收益率和成交量分别存于目录src0与src1。
+%
+%\subsubsection{DEMO1(跑单个文件，只生成一天的因子)}
+%- 进入镜像\\
+%sudo docker run -it centos-simexpr-1.0.3 /bin/bash\\
+%- 进入工作目录\\
+%cd /home/factorgen\\
+%- 运行命令\\
+%./factorgen $-$$-$OUTPUT /tmp/fromcpp1.csv $-$$-$EXPR EXPR/MODE2\_GIANT $-$$-$AA DATA/ret1.csv $-$$-$BB DATA/ret2.csv $-$$-$THREAD\_NUM 4 $-$$-$KEY oEYfy4uQ7VmGyBfLaztxpYByBYgo\\
+%- 查看结果\\
+%结果存于/tmp/fromcpp1.csv，行代表所有股票，列代表不同变换得到的因子值。\\
+%
+
+\subsection{Input Format}
+\label{subsec:input}
+
+\subsubsection{input data format}
+
+Input (parameter AA or BB) is a csv format. It is a dataframe, its column is stock ids, its index is time (usually).
+\begin{table}[htbp]
+\centering
+\caption{input data format}
+\begin{tabular}{ccccc}%l=left, r=right,c=center分别代表左对齐，右对齐和居中，字母的个数代表列数
+
+            & stock 0   &  stock 1  &   $\cdots$    &  stock M-1  \\ \hline 
+line 0      &X[0][0]    & X[0][1] &   $\cdots$    &X[0][M-1]  \\  
+line 1      &X[1][0]    & X[1][1] &   $\cdots$    &X[1][M-1]  \\  
+$\cdots$    & $\cdots$  & $\cdots$     &   $\cdots$    &  $\cdots$      \\  
+line N - 1  &X[N-1][0]  &X[N-1][1]&   $\cdots$    &X[N-1][M-1]\\  
+
+\end{tabular}
+\end{table}
+
+
+\subsubsection{Note }
+%-\textbf{矩阵行与行的顺序是有意义的}，最后一行表示最接近当前交易时点的信息，不可将顺序颠倒(计算逻辑会有最后k行的均值等,而没有前k行的均值)。\\
+%-矩阵\textbf{行数不宜过大}，比如超过512计算速度会变慢。\\
+%-矩阵每一行代表的含义可以是天(用于日频数据)、季度(用于基本面数据)、分钟(用于分钟数据)、秒（用于高频数据)。\\
+%-矩阵行数可以\textbf{尽量(非必须)设置成2的整数幂}，因为存在FFT操作，非整数幂会涉及到补均值齐到2整数幂。\\
+%-如果AA与BB中的列数量或者\textbf{顺序不对也能处理}，输出会以AA中的列为主，BB中缺失的列则会填nan。\\
+
+
+\begin{itemize}
+\item[*] The order of rows in the matrix is meaningful, with the last row representing the information closest to the current trading time point. The order should not be reversed.
+\item[*] The number of rows in the matrix should not be too large.
+\item[*] The meaning represented by each row of the matrix can be days, quarters, minutes, seconds, or any other unit of time.
+\item[*] The number of rows in the matrix can be set to a power of 2 if possible (not mandatory) because there may be FFT operations involved, and using a non-power-of-2 size would require padding or resampling to achieve a power-of-2 size.
+\end{itemize}
+
+
+%\subsection{参数说明}
+%
+%程序的具体参数如下 : \\
+%- \textbf{$MODE$} : SINGLE 或 MULTIPLE，SINGLE对于DEMO1，只处理一个输入文件，MULTIPLE对应DEMO2，可以将一个文件夹下的文件批量处理 \\
+%- \textbf{$AA$} : 当MODE=SINGLE时，输入矩阵AA的路径，为一个$N \times M$ 的矩阵(见\ref{subsec:input})；当MODE=MULTIPLE，AA为一个目录，包含若干个相同格式的矩阵文件\\
+%- \textbf{$BB$} : 输入矩阵BB的路径，格式同AA\\ 
+%- \textbf{$THREAD\_NUM$} : 线程数，默认为1\\
+%- \textbf{$KEY$} : 注册时得到的key，如果未经注册或者注册到期，程序将无法运行\\
+%- \textbf{$EXPR$} : 指定所有待计算表达式文件\\
+%- \textbf{$OUTPUT$} : 输出文件路径\\
+%
+%
+%
+%
+%
+%
+%
+%\subsection{性能介绍}
+%
+%
+%\begin{table}[htbp]
+%\centering
+%\caption{不同模式下模板数量}
+%\begin{tabular}{ccccc}%l=left, r=right,c=center分别代表左对齐，右对齐和居中，字母的个数代表列数
+%
+%            & SMALL  & BIG   &   HUGE    &  GIANT  \\ \hline 
+%MODE1       &  220   & 632   &   1804    &  3628   \\  
+%MODE2       &  180   & 700   &   4631    &  11810  \\  
+%
+%\end{tabular}
+%\end{table}
+%
+%测试使用的数据量为128(或32)乘以784的矩阵，线程数设置为1，显示的运行时间是生成一天因子所耗费的时间。
+%\begin{table}[htbp]
+%\centering
+%\caption{不同模式下模板计算时间，输入大小128$\times$784}
+%\begin{tabular}{ccccc}
+%
+%            & SMALL   & BIG  &   HUGE    &  GIANT  \\ \hline 
+%MODE1       & 0.420s&0.953s&3.234s&4.832s       \\  
+%MODE2       & 1.726s &2.537s &9.597s &22.008s  \\  
+%
+%\end{tabular}
+%\end{table}
+%
+%
+%\begin{table}[htbp]
+%\centering
+%\caption{不同模式下模板计算时间，输入大小32$\times$784}
+%\begin{tabular}{ccccc}
+%
+%            & SMALL   & BIG  &   HUGE    &  GIANT  \\ \hline 
+%MODE1     &0.229s& 0.510s& 1.584s& 2.899s\\
+%MODE2       &0.332s& 0.702s& 3.787s& 9.622s\\
+%
+%\end{tabular}
+%\end{table}
+%
+%
+%
+%
+%
+%
+%
+%
+%\subsection{使用因子}
+%
+%- 输入信号需要避免极端值或者过多nan的情况，会影响效果。\\
+%- 可以根据IC或者头部超额收益或者多空收益或者多空收益IR等常见指标对于计算得到的因子进行评价和筛选。\\
+%- 由于生成因子数量较多，需要注意部分因子可能存在过多nan或者0值的象限，会导致计算得到异常的绩效，从而影响到筛选出的因子质量。可以根据最终得到的因子列表对照算子章节中的计算逻辑，得到最终因子的含义。
+%
+%
+%
+%\subsection{一个完整的使用例子}
+%
+%
+%\FloatBarrier
+%\subsubsection{准备数据}
+%基于日内每分钟的交易量、交易价格高开低收等数据，构建基本变量13个分别存于目录src1，src2，...，src13。具体结构如下
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[height=200pt]{1.png}
+%\centering
+%\caption {目录结构}
+%\end{figure}
+%
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[height=200pt]{2.png}
+%\centering
+%\caption {文件内容}
+%\end{figure}
+%
+%\FloatBarrier
+%\subsubsection{运行程序}
+%- 对于每个数据源作用上一元算子模板(EXPR/MODE1\_GIANT)，共计13 $\times$ 3628 。\\
+%- 对于每对数据源组合作用上一元算子模板(EXPR/MODE2\_GIANT)，共计78 $\times$ 11810 。\\
+%- 共计968344个因子，可以保存下所有的IC或者超额收益等指标（需要用户自己计算)，如下。\\
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[height=100pt]{3.png}
+%\centering
+%\caption {保存因子IC}
+%\end{figure}
+%
+%\FloatBarrier
+%\subsubsection{因子质量}
+%
+%前三个IC（筛选掉相关性0.5以上因子)最好的因子如下(IC均超过0.04，ZZ500内选股因子)：\\
+%-src9关于src12滚动回归的斜率 \\
+%-src4去除部分fft成分 \\
+%-src1与src9，分别进行调整后的相关性\\
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics[height=40pt]{4.png}
+%\centering
+%\caption {IC较高的三个因子}
+%\end{figure}
+%
+%以下是用0.5因子相关性作为筛选条件得到最高IC的850个因子的IC分布：\\
+%\begin{figure}[h]
+%\centering
+%\includegraphics[height=200pt]{cmp.jpg}
+%\centering
+%\caption {前850个因子的IC}
+%\end{figure}
+%
+%用户可以根据对市场的理解设计出更为复杂有效的指标用来筛选出想要的因子。\\
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Instruction To Functions}
+
+\subsection{Operators Category}
+
+Based on the output data type or meaning, operators can be roughly divided into the following four categories:\\
+
+
+%算子根据输出数据类型或者含义大体分为以下四类
+
+\begin{itemize}
+%\item[*] 第一类对应最终的输出信号(最终因子值)，这类算子用FINAL作为前缀
+\item[*] The first category corresponds to the final output signal (final factor value), and these operators use 'FINAL' as a prefix.
+%\item[*] 第二类对应输出中间变量，可以理解为是对输入矩阵进行调整或者变换，此类算子不作为最终信号，而是一个中间结果，这类算子以ADJ作为前缀
+\item[*] The second category corresponds to intermediate variables in the output, which can be understood as adjustments or transformations of the input matrix. These operators are not the final signals, but rather intermediate results. Operators in this category have the prefix 'ADJ'.
+%\item[*] 第三类对应输出01矩阵,可以理解为是对过滤出一些区间，此类算子不作为最终信号，也是一个中间结果，这类算子以FILTER作为前缀
+\item[*] The third category corresponds to the output of binary $(0/1)$ matrices, which can be understood as filtering out certain intervals. These operators are not the final signals but also intermediate results. Operators in this category have the prefix 'FILTER'.
+%\item[*] 第四类只有一个，$ADJ\_creategroup$，它会根据输入创造出股票分组。
+\item[*] The fourth category consists of only one operator, $ADJ\_creategroup$, which creates stock groups based on the input.
+\end{itemize}
+
+
+\subsection{Overview On Extracted Features}
+%\subsubsection{$FINAL\_max(x, sz)$}
+%   - To calculate the maximum of each stock's last 'sz' points
+%\subsubsection{$FINAL\_min(x, sz)$}                   
+%   - To calculate the minimum of each stock's last 'sz' points
+%\subsubsection{$FINAL\_mean(x, sz)$}                  
+%   - To calculate the mean of each stock's last 'sz' points
+%\subsubsection{$FINAL\_std(x, sz)$}                   
+%   - To calculate the std of each stock's last 'sz' points
+%\subsubsection{$FINAL\_skew(x, sz)$}                  
+%   - To calculate the skewness of each stock's last 'sz' points
+%\subsubsection{$FINAL\_kurt(x, sz)$}                  
+%   - To calculate the kurtosis of each stock's last 'sz' points
+%\subsubsection{$FINAL\_delta(x, sz)$}                 
+%   %- 差分  
+%   - Temporal Difference 
+%\subsubsection{$FINAL\_rank(x)$}                      
+%   - 相对排序          
+%\subsubsection{$FINAL\_corr(x, sz)$}                  
+%   %- 时序自相关性      
+%   - Time series autocorrelation
+%\subsubsection{$FINAL\_cov(x, sz)$}                   
+%   %- 时序自相协方差   
+%   - autocovariance of time series
+%\subsubsection{$FINAL\_weighted(x, y)$}               
+%   %- 加权平均
+%   - weighted average
+%\subsubsection{$FINAL\_correlation(x, y)$}            
+%   - correlation
+%\subsubsection{$FINAL\_covariance(x, y)$}             
+%   - covariance            
+%\subsubsection{$FINAL\_slope(x, sz)$}                 
+%   % - 线性回归斜率      
+%   - slope of linear regression
+%\subsubsection{$FINAL\_intercept(x, sz)$}             
+%   %- 线性回归截距      
+%   - intercept of linear regression
+%\subsubsection{$FINAL\_residual(x, sz)$}              
+%   %- 线性回归残差      
+%   - residuals of linear regression
+%\subsubsection{$FINAL\_residual2(x, sz)$}             
+%   %- 线性回归残差波动性 
+%   - volatility of residuals in linear regression
+%
+%\subsubsection{$FINAL\_ar1a$}
+%   - 一阶AR模型系数
+%  \subsubsection{$FINAL\_ar1b$}
+%   - 一阶AR模型截距
+%  \subsubsection{$FINAL\_ar1e$}
+%   - 一阶AR模型残差
+%  \subsubsection{$FINAL\_ar1e2$}
+%   - 一阶AR模型残差能量
+%
+%  \subsubsection{$FINAL\_arima1a$}
+%   - 一阶ARIMA模型系数
+%  \subsubsection{$FINAL\_arima1b$}
+%   - 一阶ARIMA模型截距
+%  \subsubsection{$FINAL\_arima1e$}
+%   - 一阶ARIMA模型残差
+%  \subsubsection{$FINAL\_arima1e2$}
+%   - 一阶ARIMA模型误差能量
+%
+%
+%
+%\subsubsection{$FINAL\_fftresidual(x, sz, kp)$}       
+%   - FFT分量剥离        
+%\subsubsection{$FINAL\_fmax(x, mask)$}                
+%   - mask标记的子区间中x的最大值       
+%\subsubsection{$FINAL\_fmin(x, mask)$}                
+%   - mask标记的子区间中x的最小值       
+%\subsubsection{$FINAL\_fmean(x, mask)$}               
+%   - mask标记的子区间中x的均值         
+%\subsubsection{$FINAL\_fstd(x, mask)$}                
+%   - mask标记的子区间中x的标准差       
+%\subsubsection{$FINAL\_fskew(x, mask)$}               
+%   - mask标记的子区间中x的偏度        
+%\subsubsection{$FINAL\_fkurt(x, mask)$}               
+%   - mask标记的子区间中x的峰度         
+%\subsubsection{$FINAL\_fdmax(x, mask)$}               
+%   - mask标记的子区间中x的最大值与整体最大值差异   
+%\subsubsection{$FINAL\_fdmin(x, mask)$}               
+%   - mask标记的子区间中x的最小值与整体最小值差异  
+%\subsubsection{$FINAL\_fdmean(x, mask)$}              
+%   - mask标记的子区间中x的均值与整体均值差异       
+%\subsubsection{$FINAL\_fddmean(x, mask)$}             
+%   - mask标记的子区间中x的均值与整体均 值比例      
+%\subsubsection{$FINAL\_fdstd(x, mask)$}               
+%   - mask标记的子区间中x的标准差与整体标准差差异   
+%\subsubsection{$FINAL\_fddstd(x, mask)$}              
+%   - mask标记的子区间中x的标准差与整体标准差的比例 
+%\subsubsection{$FINAL\_fdskew(x, mask)$}              
+%   - mask标记的子区间中x的偏度与整体偏度差异       
+%\subsubsection{$FINAL\_fdkurt(x, mask)$}              
+%   - mask标记的子区间中x的峰度与整体峰度差异       
+% \subsubsection{$FILTER\_rsigma(x, cut)$}              
+%   - 过滤出极值区间               
+% \subsubsection{$FILTER\_peak(x)$}                     
+%   - 过滤出峰值区间                
+% \subsubsection{$FILTER\_up(x)$}                       
+%   - 过滤出上行区间                 
+% \subsubsection{$ADJ\_slopey(df\_x, df\_y, window)$}     
+%   - 截面求斜率  
+% \subsubsection{$ADJ\_intercepty(df\_x, df\_y, window)$} 
+%   - 截面取截距  
+% \subsubsection{$ADJ\_residualy(df\_x, df\_y, window)$}  
+%   - 截面取残差  
+% \subsubsection{$ADJ\_residualr2y(df\_x, df\_y, window)$}  
+%   - 截面取残差  
+% \subsubsection{$ADJ\_iirisk(df\_x, df\_y)$}             
+%   - 截面调整风险因子  
+% \subsubsection{$ADJ\_dirisk(df\_x, df\_y)$}             
+%   - 时序调整风险因子  
+% \subsubsection{$ADJ\_svd(x, kp)$}                     
+%   - PCA分量提取  
+% \subsubsection{$ADJ\_svdenergy$}
+%   - PCA分量提取,从能量角度  
+% \subsubsection{$ADJ\_svdflat$}
+%   - PCA分量调整
+% \subsubsection{$ADJ\_svdaux(x, y, kp)$}               
+%   - PCA分量调整
+% \subsubsection{$ADJ\_gsvd(x, y, kp)$}                 
+%   - PCA分量调整  
+% \subsubsection{$ADJ\_divstd(x)$}                      
+%   - 截面除以标准差  
+% \subsubsection{$ADJ\_demean(x)$}                      
+%   - 截面减均值  
+% \subsubsection{$ADJ\_rank(x)$}                        
+%   - 截面分位数  
+% \subsubsection{$ADJ\_fft(x, kp)$}                     
+%   - 时序FFT去除低频分量   
+%
+%  \subsubsection{$ADJ\_fftresidual$}
+%   - 时序FFT去除低频分量 
+%  \subsubsection{$ADJ\_fftflatten$}
+%   - 频谱白化  
+%  \subsubsection{$ADJ\_dwt$}
+%   - 小波变换分量  
+%  \subsubsection{$ADJ\_dsmooth$}
+%   - 小波变换相关  
+%  \subsubsection{$ADJ\_drough$}
+%   - 小波变换相关  
+% \subsubsection{$ADJ\_graph(x, g, qs)$}                
+%   - 股票关系网g用于调整x   
+%  \subsubsection{$ADJ\_group$}
+%   - 股票分组用于调整x  
+%  \subsubsection{$ADJ\_creategroup$}
+%   - 创建股票分组  
+
+
+
+
+
+
+\subsubsection{$FILTER\_nsigma$}
+$std::vector<std::vector<double>> FILTER\_nsigma(const std::vector<std::vector<double>> \&arg1, double cutoff);$\\
+Filter out intervals that are less than cutoff * std.\\
+
+\subsubsection{$FILTER\_rsigma$}
+$std::vector<std::vector<double>> FILTER\_rsigma(const std::vector<std::vector<double>> \&arg1, double cutoff);$\\
+Filter out intervals that are greater than cutoff * std.\\
+
+\subsubsection{$FILTER\_peak$}
+$std::vector<std::vector<double>> FILTER\_peak(const std::vector<std::vector<double>> \&arg1);$\\
+Filter out peak intervals\\
+
+\subsubsection{$FILTER\_up$}
+$std::vector<std::vector<double>> FILTER\_up(const std::vector<std::vector<double>> \&arg1) ;$\\
+Filter out intervals greater than the previous sample\\
+
+\subsubsection{$FILTER\_down$}
+$std::vector<std::vector<double>> FILTER\_down(const std::vector<std::vector<double>> \&arg1) ;$\\
+Filter out intervals smaller than the previous sample.\\
+
+\subsubsection{$FINAL\_raw$}
+$std::vector<std::vector<double>> FINAL\_raw(const std::vector<std::vector<double>> \&arg1) ;$\\
+arg1 is the input dataframe, extract the last row as a feature.\\
+
+\subsubsection{$FINAL\_rank$}
+$std::vector<std::vector<double>> FINAL\_rank(const std::vector<std::vector<double>> \&arg1) ;$\\
+arg1 is the input dataframe, extract the last row and use its quantiles as features.\\
+\subsubsection{$FINAL\_max$}
+$std::vector<std::vector<double>> FINAL\_max(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+arg1 is the input dataframe, extract the maximum value of the last bd rows as a feature\\
+
+\subsubsection{$FINAL\_min$}
+$std::vector<std::vector<double>> FINAL\_min(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+arg1 is the input dataframe, extract the minimum value of the last bd rows as a feature.
+\subsubsection{$FINAL\_mean$}
+$std::vector<std::vector<double>> FINAL\_mean(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+arg1 is the input dataframe, extract the mean value of the last bd rows as a feature.
+
+\subsubsection{$FINAL\_std$}
+$std::vector<std::vector<double>> FINAL\_std(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+arg1 is the input dataframe, extract the standard deviation of the last bd rows as a feature.
+\subsubsection{$FINAL\_skew$}
+$std::vector<std::vector<double>> FINAL\_skew(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+"arg1 is the input dataframe, extract the skewness of the last bd rows as a feature."
+\subsubsection{$FINAL\_kurt$}
+$std::vector<std::vector<double>> FINAL\_kurt(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+arg1 is the input dataframe, extract the kurtosis of the last bd rows as a feature.
+
+\subsubsection{$FINAL\_delta$}
+$std::vector<std::vector<double>> FINAL\_delta(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+arg1 is the input dataframe, subtract the last row from the row that is bd rows before the last row and use it as a feature.
+
+\subsubsection{$FINAL\_correlation$}
+$std::vector<std::vector<double>> FINAL\_correlation(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+arg1 and arg2 are input dataframes, calculate the correlation between them and use it as a feature.
+\subsubsection{$FINAL\_covariance$}
+$std::vector<std::vector<double>> FINAL\_covariance(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+arg1 and arg2 are input dataframes, calculate the covariance between them and use it as a feature.
+\subsubsection{$FINAL\_corr$}
+$std::vector<std::vector<double>> FINAL\_corr(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+arg1 is an input dataframe. Calculate the autocorrelation coefficient.
+\subsubsection{$FINAL\_cov$}
+$std::vector<std::vector<double>> FINAL\_cov(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+arg1 is an input dataframe. Calculate the autocovariance coefficient.
+\subsubsection{$FINAL\_weighted$}
+$std::vector<std::vector<double>> FINAL\_weighted(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+\subsubsection{$FINAL\_slope$}
+$std::vector<std::vector<double>> FINAL\_slope(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+
+
+perform linear regression on the last 'bd' points of the input dataframe, where 'y' is the values of the dataframe and 'x' is [0, 1, 2, ..., bd-1]. The slope of the linear regression will be calculated and used as a feature.\\
+
+\subsubsection{$FINAL\_intercept$}
+$std::vector<std::vector<double>> FINAL\_intercept(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+'arg1 is the input dataframe, y=arg1 last bd points, x=[0,1,2,...,bd-1], calculate linear regression with the intercept term as the feature'
+
+\subsubsection{$FINAL\_residual$}
+$std::vector<std::vector<double>> FINAL\_residual(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+arg1 is the input dataframe, y=arg1 last bd points, x=[0,1,2,...,bd-1], calculate linear regression, with the residual as the feature.
+\subsubsection{$FINAL\_residual2$}
+$std::vector<std::vector<double>> FINAL\_residual2(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+arg1 is the input dataframe, y=arg1 last bd points, x=[0,1,2,...,bd-1], calculate linear regression, with the relative error as the feature
+\subsubsection{$FINAL\_ar1a$}
+$std::vector<std::vector<double>> FINAL\_ar1a(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+arg1 is the input dataframe, use the coefficients of the AR(1) model as the feature
+\subsubsection{$FINAL\_ar1b$}
+$std::vector<std::vector<double>> FINAL\_ar1b(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+arg1 is the input dataframe, use the intercept term of the AR(1) model as the feature.
+\subsubsection{$FINAL\_ar1e$}
+$std::vector<std::vector<double>> FINAL\_ar1e(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+arg1 is the input dataframe, use the residuals of the AR(1) model as the feature.
+\subsubsection{$FINAL\_ar2e$}
+$std::vector<std::vector<double>> FINAL\_ar2e(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+arg1 is the input dataframe, use the relative error of the AR(1) model as the feature.
+
+\subsubsection{$FINAL\_gar1e$}
+$std::vector<std::vector<double>> FINAL\_gar1e(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2, int kp, int gr) ;$\\
+\subsubsection{$FINAL\_gar2e$}
+$std::vector<std::vector<double>> FINAL\_gar2e(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2, int kp, int gr) ;$\\
+\subsubsection{$FINAL\_ar1e2$}
+$std::vector<std::vector<double>> FINAL\_ar1e2(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+\subsubsection{$FINAL\_ar2e2$}
+
+$std::vector<std::vector<double>> FINAL\_ar2e2(const std::vector<std::vector<double>> \&arg1, int kp) ;$\\
+\subsubsection{$FINAL\_arima1a$}
+$std::vector<std::vector<double>> FINAL\_arima1a(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+arg1 is the input dataframe, use the coefficients of the ARIMA(1) model as the feature
+\subsubsection{$FINAL\_arima1b$}
+$std::vector<std::vector<double>> FINAL\_arima1b(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+arg1 is the input dataframe, use the intercept term of the ARIMA(1) model as the feature.
+\subsubsection{$FINAL\_arima1e$}
+$std::vector<std::vector<double>> FINAL\_arima1e(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+arg1 is the input dataframe, use the intercept term of the ARIMA(1) model as the feature.
+\subsubsection{$FINAL\_arima1e2$}
+$std::vector<std::vector<double>> FINAL\_arima1e2(const std::vector<std::vector<double>> \&arg1, int bd) ;$\\
+arg1 is the input dataframe, use the relative error of the ARIMA(1) model as the feature.
+\subsubsection{$FINAL\_fmax$}
+$std::vector<std::vector<double>> FINAL\_fmax(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+arg1 and arg2 are input dataframes. Retrieve the intervals in arg2 where the label is 1, and calculate the maximum value of arg1 within those intervals.
+\subsubsection{$FINAL\_fmin$}
+$std::vector<std::vector<double>> FINAL\_fmin(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+arg1 and arg2 are input dataframes. Retrieve the intervals in arg2 where the label is 1, and calculate the minimum value of arg1 within those intervals
+\subsubsection{$FINAL\_fmean$}
+$std::vector<std::vector<double>> FINAL\_fmean(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+arg1 arg2 are input dataframes. Retrieve the interval marked as 1 in arg2 and calculate the mean of arg1 within that interval.
+\subsubsection{$FINAL\_fstd$}
+$std::vector<std::vector<double>> FINAL\_fstd(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+arg1 arg2 are input dataframes. Retrieve the interval marked as 1 in arg2 and calculate the standard deviation of arg1 within that interval.
+\subsubsection{$FINAL\_fskew$}
+$std::vector<std::vector<double>> FINAL\_fskew(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+arg1 arg2 are input dataframes. Retrieve the interval marked as 1 in arg2 and calculate the skewness of arg1 within that interval.
+\subsubsection{$FINAL\_fkurt$}
+$std::vector<std::vector<double>> FINAL\_fkurt(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+arg1 arg2 are input dataframes. Retrieve the interval marked as 1 in arg2 and calculate the kurtosis of arg1 within that interval.
+
+\subsubsection{$FINAL\_fdmax$}
+$std::vector<std::vector<double>> FINAL\_fdmax(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+arg1 and arg2 are input dataframes. Retrieve the interval where arg2 is marked as 1, calculate the difference between the maximum value of arg1 within that interval and the maximum value of arg1 overall.
+\subsubsection{$FINAL\_fdmin$}
+$std::vector<std::vector<double>> FINAL\_fdmin(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+arg1 and arg2 are input dataframes. Retrieve the interval where arg2 is marked as 1, calculate the difference between the minimum value of arg1 within that interval and the minimum value of arg1 overall.
+
+\subsubsection{$FINAL\_fdmean$}
+$std::vector<std::vector<double>> FINAL\_fdmean(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+arg1 and arg2 are input dataframes. Retrieve the interval where arg2 is marked as 1, calculate the difference between the mean value of arg1 within that interval and the mean value of arg1 overall.
+
+\subsubsection{$FINAL\_fddmean$}
+$std::vector<std::vector<double>> FINAL\_fddmean(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+arg1 and arg2 are input dataframes. Retrieve the interval where arg2 is marked as 1, calculate the ratio between the mean value of arg1 within that interval and the mean value of arg1 overall.
+\subsubsection{$FINAL\_fdstd$}
+$std::vector<std::vector<double>> FINAL\_fdstd(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+arg1 arg2 are input dataframes. Retrieve the interval marked as 1 in arg2 and calculate the difference between the standard deviation of arg1 within that interval and the overall standard deviation of arg1.
+\subsubsection{$FINAL\_fddstd$}
+$std::vector<std::vector<double>> FINAL\_fddstd(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+arg1 arg2 are input dataframes. Retrieve the interval where arg2 is marked as 1, and calculate the standard deviation of arg1 within that interval compared to the overall standard deviation of arg1.
+\subsubsection{$FINAL\_fdskew$}
+$std::vector<std::vector<double>> FINAL\_fdskew(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+arg1 arg2 are input dataframes. Retrieve the interval marked as 1 in arg2 and calculate the difference between the skewness of arg1 within that interval and the skewness of arg1 overall.
+\subsubsection{$FINAL\_fdkurt$}
+$std::vector<std::vector<double>> FINAL\_fdkurt(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+
+arg1 arg2 are input dataframes. Retrieve the interval marked as 1 in arg2 and calculate the difference between the kurtosis of arg1 within that interval and the kurtosis of arg1 overall.
+
+
+
+\subsubsection{$FINAL\_argmax$}
+$std::vector<std::vector<double>> FINAL\_argmax(const std::vector<std::vector<double>> \&arg1, int kp) ;$\\
+arg1 is an input dataframe. Calculate the position where the maximum value occurs within the last kp points
+\subsubsection{$FINAL\_argmin$}
+$std::vector<std::vector<double>> FINAL\_argmin(const std::vector<std::vector<double>> \&arg1, int kp) ;$\\
+arg1 is an input dataframe. Calculate the position where the minimum value occurs within the last kp points
+
+
+\subsubsection{$FINAL\_chebyshev$}
+$std::vector<std::vector<double>> FINAL\_chebyshev(const std::vector<std::vector<double>> \&arg1, int n, int kp) ;$\\
+arg1 is the input dataframe, projecting onto the Chebyshev polynomial of order 'n' as a feature
+\subsubsection{$FINAL\_chebyshev2$}
+$std::vector<std::vector<double>> FINAL\_chebyshev2(const std::vector<std::vector<double>> \&arg1, int n, int kp) ;$\\
+arg1 is the input dataframe, projecting onto the Chebyshev2 polynomial of order 'n' as a feature
+\subsubsection{$FINAL\_hermite$}
+$std::vector<std::vector<double>> FINAL\_hermite(const std::vector<std::vector<double>> \&arg1, int n, int kp) ;$\\
+arg1 is the input dataframe, projecting onto the Hermite polynomial of order 'n' as a feature
+\subsubsection{$FINAL\_laguerre$}
+$std::vector<std::vector<double>> FINAL\_laguerre(const std::vector<std::vector<double>> \&arg1, int n, int kp) ;$\\
+arg1 is the input dataframe, projecting onto the Laguerre polynomial of order 'n' as a feature
+\subsubsection{$FINAL\_cided$}
+$std::vector<std::vector<double>> FINAL\_cided(const std::vector<std::vector<double>> \&arg1, int kp) ;$\\
+arg1 is the input dataframe, where the average change in value between each point and the previous point is used as a feature.(std)
+
+\subsubsection{$FINAL\_cidednormalized$}
+$std::vector<std::vector<double>> FINAL\_cidednormalized(const std::vector<std::vector<double>> \&arg1, int kp) ;$\\
+arg1 is the input dataframe, where the average change in value between each point and the previous point is used as a feature(normalized).
+\subsubsection{$FINAL\_centroid$}
+$std::vector<std::vector<double>> FINAL\_centroid(const std::vector<std::vector<double>> \&arg1, int kp) ;$\\
+arg1 is the input dataframe, use the centroid of the input as a feature.
+
+\subsubsection{$FINAL\_meanabsdiff$}
+$std::vector<std::vector<double>> FINAL\_meanabsdiff(const std::vector<std::vector<double>> \&arg1, int kp) ;$\\
+arg1 is the input dataframe, where the average change in value between each point and the previous point is used as a feature.(abs difference)
+
+\subsubsection{$FINAL\_countabovemean$}
+$std::vector<std::vector<double>> FINAL\_countabovemean(const std::vector<std::vector<double>> \&arg1, int kp) ;$\\
+arg1 is the input dataframe, the number of samples above the mean as a feature.
+\subsubsection{$FINAL\_countbelowmean$}
+$std::vector<std::vector<double>> FINAL\_countbelowmean(const std::vector<std::vector<double>> \&arg1, int kp) ;$\\
+arg1 is the input dataframe, the number of samples below the mean as a feature.
+\subsubsection{$FINAL\_fftresidual$}
+$std::vector<std::vector<double>> FINAL\_fftresidual(const std::vector<std::vector<double>> \&arg1, int bd, int kp) ;$\\
+arg1 is the input dataframe, using FFT to remove the first KP low-frequency components.
+\subsubsection{$FINAL\_fftresidualh$}
+$std::vector<std::vector<double>> FINAL\_fftresidualh(const std::vector<std::vector<double>> \&arg1, int bd, int kp) ;$\\
+arg1 is the input dataframe, using FFT to remove the first KP high-frequency components.
+\subsubsection{$FINAL\_walshresidual$}
+$std::vector<std::vector<double>> FINAL\_walshresidual(const std::vector<std::vector<double>> \&arg1, int bd, int kp) ;$\\
+arg1 is the input dataframe, using walsh transformation to remove the first KP components.
+
+
+
+\subsubsection{$ADJ\_divstd$}
+$std::vector<std::vector<double>> ADJ\_divstd(const std::vector<std::vector<double>> \&arg1) ;$\\
+arg1 is the input dataframe, adjusting the standard deviation of each row.
+\subsubsection{$ADJ\_demean$}
+$std::vector<std::vector<double>> ADJ\_demean(const std::vector<std::vector<double>> \&arg1) ;$\\
+arg1 is the input dataframe, adjusting the mean of each row.
+\subsubsection{$ADJ\_rank$}
+$std::vector<std::vector<double>> ADJ\_rank(const std::vector<std::vector<double>> \&arg1) ;$\\
+arg1 is an input dataframe, with each column mapped to its quantiles.
+\subsubsection{$ADJ\_svd$}
+$std::vector<std::vector<double>> ADJ\_svd(const std::vector<std::vector<double>> \&arg1, int kp) ;$\\
+arg1 is an input dataframe. Utilizing SVD, it undergoes singular value adjustment using method 1
+\subsubsection{$ADJ\_svdflat$}
+$std::vector<std::vector<double>> ADJ\_svdflat(const std::vector<std::vector<double>> \&arg1, int kp) ;$\\
+arg1 is an input dataframe. Utilizing SVD, it undergoes singular value adjustment using method 2
+\subsubsection{$ADJ\_svdenergy$}
+$std::vector<std::vector<double>> ADJ\_svdenergy(const std::vector<std::vector<double>> \&arg1, double percent) ;$\\
+arg1 is an input dataframe. Utilizing SVD, it undergoes singular value adjustment using method 3
+
+\subsubsection{$ADJ\_svdaux$}
+$std::vector<std::vector<double>> ADJ\_svdaux(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2, int kp) ;$\\
+arg1 and arg2 are input dataframes. The SVD of arg2 is used to adjust arg1
+
+%\subsubsection{$ADJ\_gsvd$}
+%$std::vector<std::vector<double>> ADJ\_gsvd(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2, int kp) ;$\\
+\subsubsection{$ADJ\_fftresidual$}
+$std::vector<std::vector<double>> ADJ\_fftresidual(const std::vector<std::vector<double>> \&arg1, int bd, int kp) ;$\\
+arg1 is the input dataframe, remove the low-frequency components of the Fourier transform(rolling version)
+
+\subsubsection{$ADJ\_fft$}
+$std::vector<std::vector<double>> ADJ\_fft(const std::vector<std::vector<double>> \&arg1, int kp) ;$\\
+arg1 is the input dataframe, remove the low-frequency components of the Fourier transform.
+\subsubsection{$ADJ\_fftflatten$}
+$std::vector<std::vector<double>> ADJ\_fftflatten(const std::vector<std::vector<double>> \&arg1) ;$\\
+arg1 is an input dataframe. Adjustments are made to its power spectral density
+
+\subsubsection{$ADJ\_dwt$}
+$std::vector<std::vector<double>> ADJ\_dwt(const std::vector<std::vector<double>> \&arg1, int kp) ;$\\
+arg1 is the input dataframe, denoise using wavelet transform
+
+\subsubsection{$ADJ\_dsmooth$}
+$std::vector<std::vector<double>> ADJ\_dsmooth(const std::vector<std::vector<double>> \&arg1, int kp, double cut) ;$\\
+arg1 is the input dataframe, wavelet transform low-frequency components
+\subsubsection{$ADJ\_drough$}
+$std::vector<std::vector<double>> ADJ\_drough(const std::vector<std::vector<double>> \&arg1, int kp, double cut) ;$\\
+arg1 is the input dataframe, wavelet transform high-frequency components
+
+\subsubsection{$ADJ\_slopey$}
+$std::vector<std::vector<double>> ADJ\_slopey(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2, int bd) ;$\\
+arg1 and arg2 are input dataframes, rolling beta coefficient of arg1 with respect to arg2 as the output matrix
+
+\subsubsection{$ADJ\_intercepty$}
+$std::vector<std::vector<double>> ADJ\_intercepty(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2, int bd) ;$\\
+arg1 and arg2 are input dataframes, rolling intercept term of the regression model of arg1 with respect to arg2 as the output matrix
+\subsubsection{$ADJ\_residualy$}
+$std::vector<std::vector<double>> ADJ\_residualy(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2, int bd) ;$\\
+arg1 and arg2 are input dataframes. Rolling regression model residuals of arg1 with respect to arg2 are output as a matrix.
+\subsubsection{$ADJ\_residualr2y$}
+$std::vector<std::vector<double>> ADJ\_residualr2y(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2, int bd) ;$\\
+arg1 and arg2 are input dataframes. Rolling regression model of arg1 with respect to arg2 at the bd point, relative error terms, are output as a matrix
+
+%\subsubsection{$ADJ\_iirisk$}
+%$std::vector<std::vector<double>> ADJ\_iirisk(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+%\subsubsection{$ADJ\_dirisk$}
+%$std::vector<std::vector<double>> ADJ\_dirisk(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+\subsubsection{$ADJ\_group$}
+$std::vector<std::vector<double>> ADJ\_group(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+arg1 and arg2 are input dataframes. Neutralizing arg1 using stock grouping specified by arg2
+\subsubsection{$ADJ\_creategroup$}
+$std::vector<std::vector<double>> ADJ\_creategroup(const std::vector<std::vector<double>> \&arg1, int bd, int div) ;$\\
+arg1 is an input dataframe. Creating stock groups using the last bd rows of data
+
+%\subsubsection{$ADJ\_graph$}
+%$std::vector<std::vector<double>> ADJ\_graph(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2, int qs) ;$\\
+\subsubsection{$ADJ\_image1$}
+$std::vector<std::vector<double>> ADJ\_image1(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2, int div) ;$\\
+arg1 and arg2 are input dataframes. Using arg2, arg1 is arranged into an image of size div * div and then undergoes Gaussian filtering.($ADJ\_image1$, $ADJ\_image2$, $ADJ\_image3$ parameters are different)
+\subsubsection{$ADJ\_image2$}
+$std::vector<std::vector<double>> ADJ\_image2(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2, int div) ;$\\
+arg1 and arg2 are input dataframes. Using arg2, arg1 is arranged into an image of size div * div and then undergoes Gaussian filtering.
+\subsubsection{$ADJ\_image3$}
+$std::vector<std::vector<double>> ADJ\_image3(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2, int div) ;$\\
+arg1 and arg2 are input dataframes. Using arg2, arg1 is arranged into an image of size div * div and then undergoes Gaussian filtering.
+
+%\subsubsection{$ADJ\_createkd$}
+%$std::vector<std::vector<double>> ADJ\_createkd(const std::vector<std::vector<double>> \&arg1, int kp, int kpoffset, int kdlevel) ;$\\
+%
+%\subsubsection{$ADJ\_createtree$}
+%$std::vector<std::vector<double>> ADJ\_createtree(const std::vector<std::vector<double>> \&arg1, int kp, int kpoffset, int kdlevel) ;$\\
+
+\subsubsection{$ADJ\_residualall$}
+$std::vector<std::vector<double>> ADJ\_residualall(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+arg1 and arg2 are input dataframes. For each row of arg1, regression is performed on arg2 to obtain the residuals, which are then outputted.
+\subsubsection{$ADJ\_residualqall$}
+$std::vector<std::vector<double>> ADJ\_residualqall(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+arg1 and arg2 are input dataframes. For each row of arg1, quadratic regression is performed on arg2 to obtain the residuals, which are then outputted.
+
+\subsubsection{$ADJ\_sortcurve$}
+$std::vector<std::vector<double>> ADJ\_sortcurve(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2, int kp) ;$\\
+arg1 and arg2 are the input dataframes. By sorting arg1 row by row using arg2 and removing the rolling mean, the adjusted result is returned as output.(method 1)
+
+\subsubsection{$ADJ\_sortcurves$}
+$std::vector<std::vector<double>> ADJ\_sortcurves(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2, int kp) ;$\\
+arg1 and arg2 are the input dataframes. By sorting arg1 row by row using arg2 and removing the rolling mean, the adjusted result is returned as output.(method 2)
+
+
+\subsubsection{$ADJ\_sortfft$}
+$std::vector<std::vector<double>> ADJ\_sortfft(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2, int kp) ;$\\
+arg1 and arg2 are input dataframes. By sorting arg1 row by row using arg2 and adjusting its Fourier Transform's low-frequency component, the adjusted result is returned as output(method1)
+\subsubsection{$ADJ\_sortffts$}
+$std::vector<std::vector<double>> ADJ\_sortffts(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2, int kp) ;$\\
+arg1 and arg2 are input dataframes. By sorting arg1 row by row using arg2 and adjusting its Fourier Transform's low-frequency component, the adjusted result is returned as output(method2)
+
+%\subsubsection{$ADJ\_sortstd$}
+%$std::vector<std::vector<double>> ADJ\_sortstd(const std::vector<std::vector<double>> \&arg1) ;$\\
+
+%\subsubsection{$ADJ\_sortother$}
+%$std::vector<std::vector<double>> ADJ\_sortother(const std::vector<std::vector<double>> \&arg1, const std::vector<std::vector<double>> \&arg2) ;$\\
+%
+
+
+
+\section{Contact Us}
+
+\subsection{Contact Us}
+
+If you find this tool useful for your research, you can contact us at 793063983@qq.com to obtain a standalone .so file for your production (subject to a certain fee). Alternatively, if you have any questions regarding its usage, feel free to reach out to us.
+
+
+%\section{一个完整的生产使用流程}
+
+
+%\end{appendix}
+\end{spacing}
+\end{CJK}
+\end{document}  %结束写文章
